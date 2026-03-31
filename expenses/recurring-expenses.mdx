@@ -1,0 +1,135 @@
+---
+title: "Recurring expenses"
+description: "Set up recurring payments and get alerts for bills due in the next 30 days."
+keywords: ["recurring expenses", "upcoming payments", "billing", "reminders", "recurrence", "proximoPago"]
+---
+
+Recurring expenses let you track bills that repeat on a fixed schedule — such as monthly parking or annual insurance — and surface upcoming payments before they are due.
+
+## What are recurring expenses
+
+Any expense can be made recurring by setting `esRecurrente: true` when creating or editing it. Once marked as recurring, the expense gains two additional attributes:
+
+- **`frecuenciaRecurrencia`** — how often the charge repeats (monthly, quarterly, semi-annual, or annual).
+- **`proximoPago`** — the next date on which the payment is due.
+
+The `/api/expenses/upcoming` endpoint queries all recurring expenses and returns those whose `proximoPago` falls within the next 30 days. This powers the **Upcoming expenses** view and the sidebar badge count.
+
+## Setting up a recurring expense
+
+<Steps>
+  <Step title="Create a new expense">
+    Go to **Add Expense** and fill in the vehicle, category, amount, description, and date as you normally would. See [Expenses](/expenses/expenses) for the full add-expense walkthrough.
+  </Step>
+  <Step title="Toggle 'Is recurring'">
+    Enable the **Is recurring** toggle (`esRecurrente`). Two new fields appear below the toggle.
+  </Step>
+  <Step title="Choose a frequency">
+    Select how often this charge recurs using the **Frequency** dropdown (`frecuenciaRecurrencia`). The four options are Mensual, Trimestral, Semestral, and Anual.
+  </Step>
+  <Step title="Set the next payment date">
+    Enter the date of the next upcoming payment in the **Next payment date** field (`proximoPago`). This date is what the system uses to determine whether the expense appears in the upcoming-expenses window.
+  </Step>
+  <Step title="Save the expense">
+    Submit the form. The expense is now tracked as recurring and will appear in the **Upcoming expenses** view when its `proximoPago` is within 30 days.
+  </Step>
+</Steps>
+
+## Recurrence frequencies
+
+<AccordionGroup>
+  <Accordion title="Mensual — Monthly" icon="calendar">
+    The expense repeats every month. Use this for costs billed on a monthly cycle.
+
+    **Common examples:**
+    - Monthly parking garage subscription (Estacionamiento)
+    - Monthly vehicle financing installment (Financiamiento)
+    - Monthly toll road pass (Peajes)
+
+    After paying, update `proximoPago` to the same day next month.
+  </Accordion>
+  <Accordion title="Trimestral — Quarterly" icon="calendar">
+    The expense repeats every three months. Use this for costs billed four times per year.
+
+    **Common examples:**
+    - Quarterly vehicle inspection fee (Registro)
+    - Quarterly insurance installment when paying in four parts (Seguro)
+
+    After paying, advance `proximoPago` by three months.
+  </Accordion>
+  <Accordion title="Semestral — Semi-annual" icon="calendar">
+    The expense repeats every six months. Use this for costs billed twice per year.
+
+    **Common examples:**
+    - Semi-annual insurance premium payment (Seguro)
+    - Semi-annual registration renewal in some jurisdictions (Registro)
+
+    After paying, advance `proximoPago` by six months.
+  </Accordion>
+  <Accordion title="Anual — Annual" icon="calendar">
+    The expense repeats once per year. Use this for yearly renewals and annual fees.
+
+    **Common examples:**
+    - Annual vehicle insurance renewal (Seguro)
+    - Annual registration / road tax (Registro)
+    - Annual vehicle inspection (Impuestos)
+
+    After paying, advance `proximoPago` by one year.
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+  The most common recurring expenses to set up when you first add a vehicle are:
+  - **Seguro (Insurance)** — frequency: Anual, with the policy renewal date as `proximoPago`.
+  - **Registro (Registration)** — frequency: Anual, with the registration expiry date as `proximoPago`.
+  - **Estacionamiento (Parking)** — frequency: Mensual, with the next billing date as `proximoPago`.
+
+  Setting these up immediately ensures you never miss a renewal reminder.
+</Tip>
+
+## Upcoming expenses view
+
+The **Upcoming expenses** page (`/upcoming-expenses`) shows all recurring expenses whose `proximoPago` is within the next 30 days, across all vehicles.
+
+Each row in the list shows:
+
+| Field | Description |
+|---|---|
+| Vehicle | The vehicle alias this expense belongs to (`vehicleAlias`). |
+| Category | The expense category (`categoria`). |
+| Description | The short description entered when the expense was created (`descripcion`). |
+| Amount | The recurring amount (`monto`). |
+| Due date | The next payment date (`proximoPago`). |
+| Frequency | How often the expense recurs (`frecuenciaRecurrencia`). |
+
+<Note>
+  The upcoming expenses window is fixed at **30 days from today**. An expense only appears in this view if its `proximoPago` date is between today and 30 days from now. Expenses with a `proximoPago` further in the future are not shown until they enter the window.
+</Note>
+
+## Navigation badges
+
+The sidebar navigation item **Gastos recurrentes** (Recurring expenses) displays a numeric badge when you have expenses due soon. The badge count comes from the `useUpcomingCounts` hook, which polls `/api/expenses/upcoming` every five minutes and returns the count of recurring expenses due within the next 30 days.
+
+If the count is zero, no badge is shown. If the API call fails, the badge gracefully disappears rather than showing an error.
+
+## Editing the next payment date
+
+After you pay a recurring expense, update its `proximoPago` to the next scheduled due date so the expense stays accurate:
+
+1. Open **Expenses history** (`/expenses-history`).
+2. Find the expense and click the edit button.
+3. Update the **Next payment date** (`proximoPago`) to the next billing cycle date.
+4. Save the changes.
+
+The expense will reappear in the upcoming-expenses view when the new `proximoPago` enters the 30-day window.
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Expenses" icon="receipt" href="/expenses/expenses">
+    Learn how to add, filter, and manage all vehicle expenses.
+  </Card>
+  <Card title="Maintenance" icon="wrench" href="/tracking/maintenance">
+    Track scheduled maintenance with its own upcoming-service reminder system.
+  </Card>
+</CardGroup>

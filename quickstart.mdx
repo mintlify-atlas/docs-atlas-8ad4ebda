@@ -1,80 +1,109 @@
 ---
 title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+description: "Get from zero to tracking your first vehicle in under 5 minutes."
 ---
 
-## Get started in three steps
+Follow these steps to create your account, add a vehicle, and log your first trip on KilomeTracker.
 
-Get your documentation site running locally and make your first customization.
+<Steps>
+  <Step title="Create your account">
+    Go to [kilometracker.vercel.app/register](https://kilometracker.vercel.app/register) and fill out the registration form:
 
-### Step 1: Set up your local environment
+    | Field | Description |
+    |-------|-------------|
+    | `username` | Your display name |
+    | `email` | Your email address |
+    | `password` | Choose a strong password |
+    | `confirmPassword` | Re-enter your password |
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+    Click **Register** to create your account. You'll be redirected to the login page.
+  </Step>
 
-### Step 2: Deploy your changes
+  <Step title="Log in">
+    Enter your email and password on the login page. After a successful login, you're redirected to the vehicle dashboard.
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+    <Note>
+      If you were invited by an admin, your account may already be created. Use the email and password provided to you.
+    </Note>
+  </Step>
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+  <Step title="Add your first vehicle">
+    From the dashboard, click **Add Vehicle** and fill out the form:
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+    | Field | Description |
+    |-------|-------------|
+    | `alias` | A short, unique identifier for the vehicle (e.g., `my-car`, `truck-01`). Used in all URLs — **cannot be changed later**. |
+    | `marca` | Vehicle brand/make (e.g., Toyota, Honda) |
+    | `modelo` | Model year (e.g., 2021) |
+    | `plates` | License plate number |
+    | `kilometrajeInicial` | Current odometer reading in kilometers |
 
-### Step 3: Go live
+    Click **Save**. Your vehicle appears on the dashboard.
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+    <Tip>
+      Choose an alias that is short, lowercase, and memorable. It becomes part of the URL for all vehicle-related pages (e.g., `/vehicle-stats/my-car`).
+    </Tip>
+  </Step>
 
-## Next steps
+  <Step title="Log your first route">
+    Navigate to **Add Route** in the sidebar and fill out the form:
 
-Now that you have your docs running, explore these key features:
+    | Field | Description |
+    |-------|-------------|
+    | `vehicleAlias` | Select your vehicle |
+    | `distanciaRecorrida` | Distance traveled in kilometers |
+    | `fecha` | Date of the trip |
+    | `notasAdicionales` | Optional notes about the trip |
 
-<CardGroup cols={2}>
+    Click **Save**. KilomeTracker immediately updates the vehicle's total mileage (`kilometrajeTotal`).
+  </Step>
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
+  <Step title="Log your first refuel">
+    Navigate to **Add Refuel** and fill out the form:
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
+    | Field | Description |
+    |-------|-------------|
+    | `vehicleAlias` | Select your vehicle |
+    | `tipoCombustible` | Fuel type: `Regular`, `Premium`, `Diesel`, `Eléctrico`, `Híbrido`, or `V-Power` |
+    | `cantidadGastada` | Total amount spent on fuel |
+    | `galones` | Number of gallons filled (optional, required for efficiency calculations) |
+    | `fecha` | Date of the refuel |
+    | `notasAdicionales` | Optional notes |
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
+    Click **Save**. Once you have enough refuels logged, visit the fuel analysis page to see your km/liter and km/gallon efficiency metrics.
 
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
+    <Info>
+      Gallons (`galones`) is optional, but without it KilomeTracker cannot calculate fuel efficiency metrics like km/liter or cost/km.
+    </Info>
+  </Step>
 
-</CardGroup>
+  <Step title="View your vehicle dashboard and stats">
+    Return to the **Dashboard** to see your vehicle card with updated mileage. Click the **Stats** button on your vehicle card to open the full statistics page, which shows:
+
+    - Total routes, refuels, maintenance records, and expenses
+    - Cost breakdown by category (fuel, maintenance, other)
+    - Fuel efficiency metrics (km/liter, km/gallon, cost/km)
+    - Total cost of ownership
+  </Step>
+</Steps>
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  KilomeTracker is mobile-first — the experience is optimized for smartphones. Filters open in a bottom sheet, and history pages show cards on mobile and tables on desktop.
 </Note>
+
+## What to explore next
+
+<CardGroup cols={2}>
+  <Card title="Manage vehicles" icon="car" href="/vehicles/managing-vehicles">
+    Edit vehicle details, deactivate old vehicles, and manage your fleet.
+  </Card>
+  <Card title="Track maintenance" icon="wrench" href="/tracking/maintenance">
+    Log service records and set reminders for upcoming maintenance.
+  </Card>
+  <Card title="Fuel analysis" icon="gas-pump" href="/tracking/fuel">
+    Analyze fuel efficiency trends and costs over time.
+  </Card>
+  <Card title="Manage expenses" icon="receipt" href="/expenses/expenses">
+    Track insurance, taxes, tolls, and all other vehicle costs.
+  </Card>
+</CardGroup>

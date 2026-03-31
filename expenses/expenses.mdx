@@ -1,0 +1,117 @@
+---
+title: "Expenses"
+description: "Track all vehicle-related costs with category breakdowns and tax-deductible flagging."
+keywords: ["expenses", "costs", "categories", "tax-deductible", "spending", "vehicle costs"]
+---
+
+KilomeTracker lets you record every expense tied to a vehicle — from insurance and registration fees to parking and tolls. Each entry is categorized, optionally flagged as tax-deductible, and can be set to recur automatically.
+
+## Adding an expense
+
+Navigate to **Add Expense** from the sidebar or from any vehicle's detail page.
+
+<Steps>
+  <Step title="Select a vehicle">
+    Choose the vehicle this expense belongs to using the `vehicleAlias` selector. All active vehicles in your account appear in the dropdown.
+  </Step>
+  <Step title="Choose a category">
+    Pick one of the nine expense categories (`categoria`). Each category maps to a segment in the expenses summary donut chart.
+  </Step>
+  <Step title="Enter the amount">
+    Type the expense amount (`monto`). Use the currency your account is configured for.
+  </Step>
+  <Step title="Write a description">
+    Add a short description (`descripcion`) that identifies this specific charge — for example, "Annual liability insurance renewal" or "Monthly parking garage fee."
+  </Step>
+  <Step title="Set the date">
+    Enter the date the expense occurred (`fecha`) in YYYY-MM-DD format.
+  </Step>
+  <Step title="Mark as tax-deductible (optional)">
+    Toggle **Tax-deductible** (`esDeducibleImpuestos`) if this expense qualifies for a deduction in your jurisdiction. This flag lets you filter and export deductible expenses at tax time.
+  </Step>
+  <Step title="Set up recurrence (optional)">
+    Toggle **Is recurring** (`esRecurrente`) to turn this into a tracked recurring expense. When enabled, two additional fields appear:
+    - **Frequency** (`frecuenciaRecurrencia`): how often the expense repeats.
+    - **Next payment date** (`proximoPago`): the next due date for this charge.
+
+    See [Recurring expenses](/expenses/recurring-expenses) for the full recurring workflow.
+  </Step>
+  <Step title="Add notes (optional)">
+    Use the **Notes** field (`notas`) for any additional context — invoice numbers, vendor names, or policy details.
+  </Step>
+</Steps>
+
+<Tip>
+  Flag every business-related expense as tax-deductible as you enter it. At year-end, filter by `esDeducibleImpuestos: true` in the **Expenses history** page to generate a clean list of deductible items across all vehicles.
+</Tip>
+
+## Expense categories
+
+KilomeTracker groups expenses into nine categories. Each category appears as a labeled segment in the expenses summary chart.
+
+| Spanish | English |
+|---|---|
+| Seguro | Insurance |
+| Impuestos | Taxes |
+| Registro | Registration |
+| Estacionamiento | Parking |
+| Peajes | Tolls |
+| Lavado | Car wash |
+| Multas | Fines |
+| Financiamiento | Financing |
+| Otro | Other |
+
+Use **Otro** for any charge that does not fit the eight named categories.
+
+## Tax-deductible tracking
+
+Setting `esDeducibleImpuestos: true` on an expense marks it for tax reporting. The flag does not change how the amount is recorded or displayed in charts — it only controls visibility when filtering.
+
+To review your deductible expenses:
+
+1. Go to **Expenses history** (`/expenses-history`).
+2. Open the filter panel and set **Tax-deductible** to **Yes**.
+3. Optionally narrow by date range or vehicle to match a specific tax period.
+
+The filtered list shows only expenses where `esDeducibleImpuestos` is `true`, which you can then copy or export for your accountant.
+
+## Expenses summary dashboard
+
+The **Expenses summary** page (`/expenses-summary`) gives you a visual breakdown of spending across all vehicles and categories.
+
+- **Donut chart**: each slice represents one category. Slice size is proportional to the total amount spent (`totalMonto`) in that category.
+- **Category table**: lists every category with the total amount and number of entries (`cantidad`) returned by the `/api/expenses/summary` endpoint. Each row corresponds to an `ExpenseSummary` record grouped by `categoria`.
+
+Use this view to identify your largest cost drivers at a glance.
+
+## Filtering expenses
+
+The **Expenses history** page (`/expenses-history`) supports four independent filters that can be combined:
+
+| Filter | Field | Description |
+|---|---|---|
+| Vehicle | `vehicleAlias` | Limit results to one specific vehicle. |
+| Category | `categoria` | Show only expenses in a chosen category. |
+| Date range | `startDate` / `endDate` | Restrict to expenses within a date window. |
+| Tax-deductible | `esDeducibleImpuestos` | Show only deductible (`true`) or non-deductible (`false`) expenses. |
+
+On mobile, tap the **Filters** button to open the filter sheet from the bottom of the screen. On desktop, filters appear in a card above the expense table.
+
+## Deleting expenses
+
+Each expense entry has a delete button in the expense history list.
+
+<Warning>
+  Deleting an expense is permanent and cannot be undone. There is no soft delete or recycle bin for expenses. Confirm you have selected the correct entry before proceeding.
+</Warning>
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Recurring expenses" icon="repeat" href="/expenses/recurring-expenses">
+    Set up repeating charges and track payments due in the next 30 days.
+  </Card>
+  <Card title="Vehicle stats" icon="chart-bar" href="/vehicles/vehicle-stats">
+    See how expense totals factor into each vehicle's total cost of ownership.
+  </Card>
+</CardGroup>

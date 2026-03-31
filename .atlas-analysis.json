@@ -1,0 +1,96 @@
+{
+  "projectType": "saas",
+  "projectName": "KilomeTracker",
+  "projectDescription": "A mobile-first web application for comprehensive vehicle management — tracking mileage, fuel consumption, maintenance, and expenses for individual drivers and small fleets.",
+  "theme": "almond",
+  "primaryColor": "#4F46E5",
+  "lightColor": "#EEF2FF",
+  "darkColor": "#312E81",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "quickstart"]
+          },
+          {
+            "group": "Vehicles",
+            "pages": ["vehicles/managing-vehicles", "vehicles/vehicle-stats"]
+          },
+          {
+            "group": "Tracking",
+            "pages": ["tracking/routes", "tracking/fuel", "tracking/maintenance"]
+          },
+          {
+            "group": "Expenses",
+            "pages": ["expenses/expenses", "expenses/recurring-expenses"]
+          },
+          {
+            "group": "Account",
+            "pages": ["account/profile", "account/admin-users"]
+          }
+        ]
+      },
+      {
+        "tab": "Developer Guide",
+        "groups": [
+          {
+            "group": "Setup",
+            "pages": ["dev/setup", "dev/environment"]
+          },
+          {
+            "group": "Architecture",
+            "pages": ["dev/architecture", "dev/api-proxy", "dev/authentication"]
+          },
+          {
+            "group": "Reference",
+            "pages": ["dev/types", "dev/components"]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Multi-vehicle dashboard with real-time stats and skeleton loading states",
+    "Route and mileage tracking with per-vehicle history",
+    "Fuel consumption analysis with efficiency metrics (km/liter, km/gallon, cost/km) and interactive charts",
+    "Maintenance scheduling with upcoming service reminders by date or mileage",
+    "Expense management with category breakdowns, recurring expenses, and tax-deductible tracking",
+    "Role-based access control (read, write, admin) with admin user management panel",
+    "BFF (Backend for Frontend) proxy pattern keeping JWT tokens in HTTP-only cookies",
+    "Mobile-first responsive design with bottom sheet filters, card lists on mobile, and tables on desktop",
+    "Dark mode support with theme-aware chart colors via useChartColors hook",
+    "Real-time badge counts for upcoming maintenance and recurring expenses in navigation"
+  ],
+  "publicApiSurface": [
+    "POST /api/auth/login — User login, returns JWT token in HTTP-only cookie",
+    "POST /api/auth/register — User registration",
+    "GET /api/auth/me — Get current authenticated user profile",
+    "PUT /api/auth/updateprofile — Update username and email",
+    "PUT /api/auth/updatepassword — Change password (requires current password)",
+    "GET /api/vehicles — List all vehicles (supports ?isActive filter)",
+    "POST /api/vehicles — Create new vehicle",
+    "GET /api/vehicles/:alias — Get vehicle by alias",
+    "PUT /api/vehicles/:alias — Update vehicle",
+    "DELETE /api/vehicles/:alias — Deactivate vehicle (soft delete)",
+    "GET /api/vehicles/:alias/stats — Comprehensive vehicle statistics",
+    "GET /api/vehicles/:alias/fuel-efficiency — Fuel efficiency metrics with date range filter",
+    "GET /api/routes — List all routes",
+    "POST /api/routes — Log new route/trip",
+    "GET /api/refuels — List all refuel records",
+    "POST /api/refuels — Log new fuel refill",
+    "GET /api/refuels/vehicle/:alias/analysis — Fuel analysis for specific vehicle",
+    "GET /api/maintenance — List maintenance records (filters: vehicleAlias, tipo, startDate, endDate)",
+    "POST /api/maintenance — Create maintenance record",
+    "GET /api/maintenance/upcoming — Maintenance due soon",
+    "GET /api/expenses — List expenses (filters: vehicleAlias, category, startDate, endDate, taxDeductible)",
+    "POST /api/expenses — Create expense",
+    "GET /api/expenses/summary — Aggregated spending by category",
+    "GET /api/expenses/upcoming — Recurring expenses due in next 30 days",
+    "GET /api/auth/users — List all users (admin only)",
+    "PUT /api/auth/users/:id/role — Update user role (admin only)",
+    "DELETE /api/auth/users/:id — Deactivate user (admin only, soft delete)"
+  ]
+}

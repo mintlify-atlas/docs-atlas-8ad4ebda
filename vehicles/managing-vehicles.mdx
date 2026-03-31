@@ -1,0 +1,120 @@
+---
+title: "Managing vehicles"
+description: "Add, view, edit, and deactivate vehicles in KilomeTracker."
+---
+
+Vehicles are the foundation of KilomeTracker. Every route, refuel, maintenance record, and expense is linked to a vehicle. This page explains how to add and manage your fleet from the dashboard.
+
+## Dashboard grid
+
+The dashboard displays your active vehicles as cards. Each card shows the vehicle's alias, brand, model year, license plates, and key metrics such as total distance traveled. Select a vehicle card to navigate to its detail pages.
+
+<Note>
+  Only active vehicles appear in the dashboard grid by default. Deactivated vehicles are hidden but their data is fully preserved.
+</Note>
+
+## Adding a vehicle
+
+<Steps>
+  <Step title="Open the add vehicle form">
+    From the dashboard, click **Add Vehicle** in the top-right area. This opens the vehicle registration form.
+  </Step>
+  <Step title="Enter the vehicle alias">
+    Type a short, unique identifier for the vehicle in the **Alias** field. The alias is used in all URLs and cannot be changed after creation.
+
+    Tips for a good alias:
+    - Keep it short and memorable (e.g., `my-car`, `truck01`, `honda-crv`)
+    - Use only lowercase letters, numbers, and hyphens
+    - Avoid spaces and special characters
+  </Step>
+  <Step title="Fill in the vehicle details">
+    Complete the remaining fields:
+
+    | Field | Description |
+    |---|---|
+    | **Marca** | Vehicle brand (e.g., Toyota, Ford) |
+    | **Modelo** | Model year as a four-digit number (e.g., 2021) |
+    | **Plates** | License plate number |
+    | **Kilometraje inicial** | Starting odometer reading in kilometers |
+  </Step>
+  <Step title="Save the vehicle">
+    Click **Save** to register the vehicle. It will appear immediately in the dashboard grid.
+  </Step>
+</Steps>
+
+<Warning>
+  The vehicle alias cannot be changed after creation. It is used as the unique identifier across all URLs (e.g., `/vehicle-stats/my-car`) and API calls. Choose it carefully before saving.
+</Warning>
+
+## Vehicle alias
+
+The alias is the permanent, URL-safe identifier for a vehicle. KilomeTracker uses it instead of a database ID to keep URLs readable and stable.
+
+For example, a vehicle with alias `honda-crv` is accessible at:
+
+- `/vehicle-stats/honda-crv` — statistics and cost overview
+- `/edit-vehicle/honda-crv` — edit vehicle details
+- `/fuel-analysis/honda-crv` — fuel efficiency analysis
+
+**Tips for choosing a good alias:**
+
+- Use something descriptive and recognizable, like the make and a number (`ford-01`).
+- Keep it under 20 characters.
+- Do not use spaces — use hyphens instead.
+- Lowercase only for consistency.
+
+## Editing a vehicle
+
+You can update a vehicle's brand, model year, license plates, and starting odometer reading. The alias cannot be changed.
+
+<Steps>
+  <Step title="Locate the vehicle on the dashboard">
+    Find the vehicle card you want to edit in the dashboard grid.
+  </Step>
+  <Step title="Open the edit form">
+    Click the edit icon on the vehicle card. This navigates to the `/edit-vehicle/[alias]` page.
+  </Step>
+  <Step title="Update the fields">
+    Modify any of the editable fields: **Marca**, **Modelo**, **Plates**, or **Kilometraje inicial**.
+  </Step>
+  <Step title="Save your changes">
+    Click **Save** to apply the changes. The dashboard reflects the update immediately.
+  </Step>
+</Steps>
+
+## Deactivating a vehicle
+
+Deactivation is a soft delete — the vehicle is hidden from the dashboard but all associated data (routes, refuels, maintenance records, expenses) is fully preserved and can be queried.
+
+<Steps>
+  <Step title="Open the edit form">
+    Click the edit icon on the vehicle card in the dashboard.
+  </Step>
+  <Step title="Toggle the active status">
+    Switch the **Active** toggle to the off position.
+  </Step>
+  <Step title="Save">
+    Click **Save**. The vehicle disappears from the dashboard grid immediately.
+  </Step>
+</Steps>
+
+<Note>
+  Deactivating a vehicle does not delete any data. All historical routes, refuels, maintenance records, and expenses remain intact. You can reactivate the vehicle at any time via the API (`PATCH /api/vehicles/[alias]/reactivate`).
+</Note>
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Vehicle statistics" icon="chart-bar" href="/vehicles/vehicle-stats">
+    View cost of ownership, efficiency metrics, and activity counts for each vehicle.
+  </Card>
+  <Card title="Tracking routes" icon="route" href="/tracking/routes">
+    Log trips and track distance traveled per vehicle.
+  </Card>
+  <Card title="Tracking fuel" icon="gas-pump" href="/tracking/fuel">
+    Record refuels and monitor fuel consumption over time.
+  </Card>
+  <Card title="Tracking maintenance" icon="wrench" href="/tracking/maintenance">
+    Schedule and log service records for each vehicle.
+  </Card>
+</CardGroup>

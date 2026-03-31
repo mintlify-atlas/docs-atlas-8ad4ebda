@@ -1,0 +1,129 @@
+---
+title: "Fuel tracking & analysis"
+description: "Record refuels, analyze fuel efficiency, and track costs per kilometer."
+---
+
+Fuel records capture every visit to the pump. KilomeTracker combines that data with your route history to calculate efficiency metrics — km/liter, km/gallon, and cost per km — so you can see exactly what each kilometer costs you.
+
+## Logging a refuel
+
+<Steps>
+  <Step title="Open the Add Refuel form">
+    Click **Add Refuel** in the sidebar navigation.
+  </Step>
+  <Step title="Select a vehicle">
+    Choose the vehicle alias from the dropdown. Only active vehicles are listed.
+  </Step>
+  <Step title="Choose fuel type">
+    Select the fuel type (`tipoCombustible`) that matches what you put in the tank. See [supported fuel types](#supported-fuel-types) below.
+  </Step>
+  <Step title="Enter the amount spent">
+    Type the total money spent on this refuel in the **Amount spent** field (`cantidadGastada`). This is the only required cost field.
+  </Step>
+  <Step title="Enter gallons and price per gallon (optional)">
+    If you want efficiency calculations, fill in **Gallons** (`galones`) and **Price per gallon** (`precioPorGalon`). KilomeTracker uses gallons to compute km/gallon and km/liter metrics.
+  </Step>
+  <Step title="Set the date">
+    Pick the refuel date (`fecha`). It defaults to today.
+  </Step>
+  <Step title="Add notes (optional)">
+    Use the **Additional notes** field (`notasAdicionales`) for any extra context — station name, location, or octane grade.
+  </Step>
+  <Step title="Save the refuel">
+    Click **Save Refuel**. The record is created immediately and appears in the fuel analysis dashboard.
+  </Step>
+</Steps>
+
+## Supported fuel types
+
+<AccordionGroup>
+  <Accordion title="Regular">
+    Standard unleaded gasoline. The most common option for everyday passenger vehicles. Suitable for engines that do not require premium octane.
+  </Accordion>
+  <Accordion title="Premium">
+    Higher-octane unleaded gasoline. Required or recommended for turbocharged and high-compression engines.
+  </Accordion>
+  <Accordion title="Diesel">
+    For diesel-engine vehicles including trucks, SUVs, and some passenger cars. Diesel records are included in cost and efficiency aggregations alongside gasoline records.
+  </Accordion>
+  <Accordion title="Eléctrico">
+    For electric vehicles. Use `cantidadGastada` to record the cost of a charging session. Gallons and price-per-gallon fields can be left blank.
+  </Accordion>
+  <Accordion title="Híbrido">
+    For hybrid vehicles that accept both fuel and electric charging. You can log both fuel fills and charging sessions as separate records under this type.
+  </Accordion>
+  <Accordion title="V-Power">
+    Shell V-Power and equivalent premium performance fuels. Tracked separately from Regular and Premium for vehicles where you alternate between fuel grades.
+  </Accordion>
+</AccordionGroup>
+
+## Fuel analysis dashboard
+
+The fuel analysis dashboard at `/fuel-analysis/[alias]` gives you a full picture of consumption and spending for a single vehicle.
+
+### Summary metrics
+
+| Metric | Description |
+|---|---|
+| Total refuels | Number of refuel records logged for the vehicle. |
+| Total spent | Sum of all `cantidadGastada` values. |
+| Total gallons | Sum of all `galones` values across records that include gallons. |
+| Average price per gallon | `totalGastado ÷ totalGalones` across all records with gallon data. |
+
+### Breakdown by fuel type
+
+The dashboard groups records by `tipoCombustible` and shows, for each type:
+
+- **Count** (`cantidad`) — number of refuels for that fuel type
+- **Total spent** (`gasto`) — cumulative cost
+- **Total gallons** (`galones`) — cumulative volume
+
+### Charts
+
+- **Bar chart**: cost by fuel type — compare spending across Regular, Premium, Diesel, and other types at a glance.
+- **Line chart**: efficiency over time — see how your km/gallon trend changes across refuel dates.
+
+## Fuel efficiency metrics
+
+Efficiency is calculated using the combined totals of gallons and distance from your route records for the same vehicle and time period.
+
+| Metric | Formula |
+|---|---|
+| km/liter | `totalDistancia ÷ (totalGalones × 3.785)` |
+| km/gallon | `totalDistancia ÷ totalGalones` |
+| cost/km | `totalGastoCombustible ÷ totalDistancia` |
+
+<Info>
+  Efficiency metrics require at least one refuel record with a `galones` value and at least one route record for the same vehicle. Records without gallons contribute to cost totals but not to efficiency calculations.
+</Info>
+
+## Filtering by date range
+
+On the fuel efficiency endpoint, you can pass `startDate` and `endDate` (format `YYYY-MM-DD`) to scope the calculation to a specific period. This lets you compare efficiency across different seasons, drivers, or driving patterns.
+
+On the **Refuels History** page, you can filter records by `vehicleAlias`, `tipoCombustible`, `startDate`, and `endDate`.
+
+## Deleting a refuel
+
+<Warning>
+  Refuel deletion is permanent. There is no undo — deleted records are removed immediately from all aggregations and efficiency calculations.
+</Warning>
+
+To delete a refuel, open **Refuels History**, find the record, and click the delete icon. Confirm the action in the dialog.
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Routes & mileage" icon="route" href="/tracking/routes">
+    Fuel efficiency depends on route data — make sure you log trips regularly.
+  </Card>
+  <Card title="Vehicle statistics" icon="chart-line" href="/vehicles/vehicle-stats">
+    See fuel costs as part of total cost of ownership for each vehicle.
+  </Card>
+  <Card title="Maintenance tracking" icon="wrench" href="/tracking/maintenance">
+    Pair refuel data with service records for a complete operating cost picture.
+  </Card>
+  <Card title="Expenses" icon="receipt" href="/expenses/expenses">
+    Record insurance, taxes, and other non-fuel costs alongside your fuel spend.
+  </Card>
+</CardGroup>

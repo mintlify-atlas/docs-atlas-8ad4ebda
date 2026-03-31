@@ -1,97 +1,78 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "KilomeTracker Documentation"
+description: "Track mileage, fuel, maintenance, and expenses for your vehicles — all in one mobile-first app."
 ---
 
-## Setting up
+KilomeTracker is a mobile-first web application for comprehensive vehicle management. Whether you drive a single car or manage a small fleet, KilomeTracker helps you stay on top of every kilometer, fuel stop, service appointment, and expense.
 
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Get started" icon="rocket" href="/quickstart">
+    Create your account and add your first vehicle in minutes.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Vehicles" icon="car" href="/vehicles/managing-vehicles">
+    Register and manage multiple vehicles with full history tracking.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Fuel analysis" icon="gas-pump" href="/tracking/fuel">
+    Monitor fuel efficiency with km/liter, km/gallon, and cost-per-km metrics.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Maintenance" icon="wrench" href="/tracking/maintenance">
+    Schedule services and get reminders before your next oil change or inspection.
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## What you can track
 
-Everything you need to create world-class documentation.
+<CardGroup cols={3}>
+  <Card title="Routes & mileage" icon="route" href="/tracking/routes">
+    Log every trip and watch your total mileage grow across all vehicles.
+  </Card>
+  <Card title="Fuel & refuels" icon="droplet" href="/tracking/fuel">
+    Record refuels with fuel type, gallons, and cost to calculate real efficiency.
+  </Card>
+  <Card title="Maintenance history" icon="screwdriver-wrench" href="/tracking/maintenance">
+    Keep a complete service log with provider details and next-service reminders.
+  </Card>
+  <Card title="Expenses" icon="receipt" href="/expenses/expenses">
+    Track insurance, taxes, tolls, fines, and any other vehicle costs.
+  </Card>
+  <Card title="Recurring expenses" icon="arrows-rotate" href="/expenses/recurring-expenses">
+    Never miss a payment — see upcoming recurring costs due in the next 30 days.
+  </Card>
+  <Card title="Vehicle statistics" icon="chart-line" href="/vehicles/vehicle-stats">
+    View total cost of ownership, efficiency metrics, and spending breakdowns per vehicle.
+  </Card>
+</CardGroup>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+## Getting started
 
-## Need inspiration?
+<Steps>
+  <Step title="Create your account">
+    Visit [kilometracker.vercel.app](https://kilometracker.vercel.app) and register with your email and a password.
+  </Step>
+  <Step title="Add your first vehicle">
+    From the dashboard, click **Add Vehicle** and enter your vehicle's alias, brand, model year, license plates, and initial mileage.
+  </Step>
+  <Step title="Log your first trip">
+    Navigate to **Add Route**, select your vehicle, enter the distance and date, and save. Your total mileage updates immediately.
+  </Step>
+  <Step title="Track your first refuel">
+    Go to **Add Refuel**, choose your vehicle, enter the fuel type, amount spent, and gallons filled. KilomeTracker calculates your efficiency automatically.
+  </Step>
+</Steps>
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+## For developers
+
+<CardGroup cols={2}>
+  <Card title="Local setup" icon="laptop-code" href="/dev/setup">
+    Clone, configure, and run KilomeTracker locally for development.
+  </Card>
+  <Card title="Architecture" icon="sitemap" href="/dev/architecture">
+    Understand the BFF proxy pattern, contexts, and project structure.
+  </Card>
+  <Card title="TypeScript types" icon="code" href="/dev/types">
+    Full reference for all shared TypeScript interfaces used across the app.
+  </Card>
+  <Card title="Component library" icon="layer-group" href="/dev/components">
+    Reusable UI components, design system conventions, and usage patterns.
+  </Card>
+</CardGroup>

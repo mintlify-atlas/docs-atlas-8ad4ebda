@@ -1,0 +1,369 @@
+---
+title: "UI components & design system"
+description: "Reusable components, design conventions, and usage patterns for the KilomeTracker UI."
+keywords: ["components", "design system", "StatCard", "Badge", "FilterPanel", "EmptyState", "charts", "mobile-first"]
+---
+
+KilomeTracker uses a mobile-first design system built on [shadcn/ui](https://ui.shadcn.com/) and Tailwind CSS v4. This page covers the custom components, semantic conventions, and layout patterns that every page should follow.
+
+<Tip>
+  All imports use the `@/` path alias. Use `@/components/ui/...`, `@/contexts/...`, and `@/hooks/...` — never relative paths.
+</Tip>
+
+---
+
+## StatCard accents
+
+`StatCard` (`src/components/features/stats/StatCard.tsx`) displays a single metric. The `accent` prop maps to a semantic domain color — always apply the correct accent for the type of data being shown.
+
+| Accent | Color | Use case |
+|--------|-------|----------|
+| `info` | Blue | Fuel / combustible costs |
+| `warning` | Amber | Maintenance / total cost |
+| `purple` | Purple | Other expenses |
+| `success` | Green | Active status / tax-deductible |
+| _(none)_ | Neutral | General totals, neutral metrics |
+
+```tsx
+import { StatCard } from "@/components/features/stats/StatCard";
+
+{/* Fuel cost → info */}
+<StatCard label="Fuel cost" value="Q 120.00" accent="info" />
+
+{/* Total cost → warning */}
+<StatCard label="Total cost" value="Q 850.00" accent="warning" />
+
+{/* Other expenses → purple */}
+<StatCard label="Other expenses" value="Q 200.00" accent="purple" />
+
+{/* Active vehicles → success */}
+<StatCard label="Active vehicles" value={12} accent="success" />
+
+{/* General total → no accent */}
+<StatCard label="Total" value="Q 1,170.00" />
+```
+
+These accents are backed by domain tokens in `globals.css`:
+
+```css
+--color-cat-fuel         /* → accent="info"    */
+--color-cat-maintenance  /* → accent="warning" */
+--color-cat-expenses     /* → accent="purple"  */
+--color-status-active    /* → accent="success" */
+```
+
+---
+
+## Badge variants
+
+`Badge` (`src/components/ui/badge.tsx`) uses semantic variants — never pick a color arbitrarily.
+
+| Variant | Use case |
+|---------|----------|
+| `success` | Active record / tax-deductible |
+| `warning` | Maintenance / cost |
+| `info` | Expense category / `write` role |
+| `purple` | `admin` role |
+| `muted` | Inactive record / `read` role |
+| `destructive` | `root` role / overdue |
+
+```tsx
+import { Badge } from "@/components/ui/badge";
+
+<Badge variant="success">Active</Badge>
+<Badge variant="warning">Maintenance</Badge>
+<Badge variant="info">Insurance</Badge>
+<Badge variant="purple">Admin</Badge>
+<Badge variant="muted">Inactive</Badge>
+<Badge variant="destructive">Root</Badge>
+```
+
+Domain CSS tokens that drive these variants:
+
+```css
+--color-role-root        /* → Badge destructive */
+--color-role-admin       /* → Badge purple      */
+--color-role-write       /* → Badge info        */
+--color-role-read        /* → Badge muted       */
+--color-status-active    /* → Badge success     */
+--color-status-inactive  /* → Badge muted       */
+--color-status-overdue   /* → Badge destructive */
+```
+
+---
+
+## FilterPanel
+
+`FilterPanel` (`src/components/ui/FilterPanel.tsx`) is the standard filter UI for every history and list page. Never place filter fields inline on mobile.
+
+**Behavior by breakpoint:**
+- **Mobile** — renders a "Filters" button with an active-count badge. Tapping opens a Sheet sliding up from the bottom.
+- **Desktop** — renders a Card with a header (title + Clear button), a field grid, and an Apply button.
+
+```tsx
+import { FilterPanel } from "@/components/ui/FilterPanel";
+
+<FilterPanel
+  onApply={fetchData}
+  onClear={handleClear}
+  activeCount={activeFilterCount}
+  gridClassName="grid grid-cols-1 sm:grid-cols-3 gap-4"
+  extras={<label>...checkbox "Show inactive"...</label>}
+>
+  {/* One <div className="space-y-2"> per field */}
+  <div className="space-y-2">
+    <Label>Vehicle</Label>
+    <SelectNative name="vehicleAlias" value={filters.vehicleAlias} onChange={...}>
+      <option value="">All vehicles</option>
+      {vehicles.map((v) => (
+        <option key={v.alias} value={v.alias}>{v.alias}</option>
+      ))}
+    </SelectNative>
+  </div>
+
+  <div className="space-y-2">
+    <Label>Start date</Label>
+    <Input type="date" name="startDate" value={filters.startDate} onChange={...} />
+  </div>
+</FilterPanel>
+```
+
+`activeCount` drives the badge on mobile — pass the number of non-empty filter fields so users know filters are active.
+
+---
+
+## EmptyState
+
+`EmptyState` (`src/components/ui/empty-state.tsx`) provides a consistent empty state UI across every page. Use it whenever a list or data view has no records to show.
+
+```tsx
+import { EmptyState } from "@/components/ui/empty-state";
+
+<EmptyState
+  icon={<Car className="h-12 w-12" />}
+  title="No vehicles registered"
+  description="Add your first vehicle to start tracking"
+  action={{
+    label: "Add Vehicle",
+    onClick: () => router.push("/add-vehicle")
+  }}
+/>
+```
+
+The `action` prop accepts either `onClick` (for client-side navigation) or `href` (for a plain link).
+
+---
+
+## CardSkeleton
+
+`CardSkeleton` (`src/components/ui/card-skeleton.tsx`) is the standard loading state for any page that fetches data. Always show it while `loading` is `true` to prevent layout shift.
+
+```tsx
+import { CardSkeleton } from "@/components/ui/card-skeleton";
+
+{loading ? <CardSkeleton rows={6} /> : <YourContent />}
+```
+
+For the vehicle dashboard grid specifically, use `VehicleCardSkeleton` (`src/components/ui/vehicle-card-skeleton.tsx`) — it matches the exact layout of `VehicleCard`.
+
+---
+
+## Charts
+
+All charts use [Recharts](https://recharts.org/) wrapped in `ResponsiveContainer` and must adapt to dark mode. Import the `useChartColors()` hook — never hard-code color values.
+
+```tsx
+import { useChartColors } from "@/hooks/useChartColors";
+
+export function MyChart({ data }) {
+  const c = useChartColors();
+
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <LineChart data={data}>
+        <CartesianGrid stroke={c.grid} />
+        <XAxis tick={{ fill: c.tick }} />
+        <YAxis tick={{ fill: c.tick }} />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: c.tooltipBg,
+            border: `1px solid ${c.tooltipBorder}`,
+          }}
+        />
+        <Line dataKey="value" stroke={c.chart1} />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}
+```
+
+Available color tokens from `useChartColors()`:
+
+| Token | Color |
+|-------|-------|
+| `c.chart1` | Indigo |
+| `c.chart2` | Green |
+| `c.chart3` | Orange |
+| `c.chart4` | Purple |
+| `c.chart5` | Red |
+| `c.grid` | Grid line color |
+| `c.tick` | Axis tick label color |
+| `c.tooltipBg` | Tooltip background |
+| `c.tooltipBorder` | Tooltip border |
+
+The app ships five pre-built chart components in `src/components/charts/`:
+
+- `ExpenseDonutChart` — expense breakdown by category
+- `FuelBarChart` — fuel spend per refuel
+- `FuelComposedChart` — combined fuel metrics
+- `FuelEfficiencyLineChart` — km/liter or km/gallon over time
+- `KmAreaChart` — cumulative distance over time
+
+---
+
+## Mobile-first layout patterns
+
+The app is used primarily on mobile. Every page must follow these patterns.
+
+### Mobile card / desktop table
+
+History and list pages render two views: a card stack on mobile and a table on desktop.
+
+```tsx
+{/* Mobile — visible below md breakpoint */}
+<div className="block md:hidden space-y-3">
+  {items.map((item) => (
+    <div key={item._id} className="rounded-xl border border-border bg-card p-4">
+      {/* Header row: label + badges + action buttons */}
+      <div className="flex items-center justify-between">
+        <span className="font-medium">{item.vehicleAlias}</span>
+        <div className="flex items-center gap-1">
+          <Badge variant="success">Active</Badge>
+          {/* Action buttons: h-8 w-8, icon only */}
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      {/* Body: primary value large, secondary metadata small */}
+      <p className="text-2xl font-bold mt-2">Q {item.monto}</p>
+      <p className="text-sm text-muted-foreground">{item.fecha}</p>
+    </div>
+  ))}
+</div>
+
+{/* Desktop — visible at md and above */}
+<div className="hidden md:block">
+  <Card>
+    <Table>...</Table>
+  </Card>
+</div>
+```
+
+**Touch target rule:** all interactive elements must be at least 44×44 px. Action icon buttons in lists use `h-8 w-8` (32 px) with sufficient padding from the parent container to meet the 44 px touch area.
+
+### CTA button pattern
+
+Every page's primary action button follows the same structure: a `<Plus>` icon followed by "Add [Entity]".
+
+```tsx
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+<Button onClick={() => router.push("/add-route")}>
+  <Plus className="h-4 w-4 mr-2" />
+  Add Route
+</Button>
+```
+
+### Forms
+
+On mobile, forms should be full-screen or presented in a bottom Sheet. Never use a compressed modal for forms with more than two fields.
+
+---
+
+## Navigation context hooks
+
+These hooks provide global state from React Contexts mounted in the dashboard layout (`src/app/(dashboard)/layout.tsx`). Import them in any `"use client"` component within the dashboard.
+
+<AccordionGroup>
+  <Accordion title="useUser() — authentication state">
+    ```tsx
+    import { useUser } from "@/contexts/UserContext";
+
+    const { user, isLoading, isAdmin, isRoot, isAuthenticated, refreshUser } = useUser();
+    ```
+
+    | Value | Type | Description |
+    |-------|------|-------------|
+    | `user` | `User \| null` | Current authenticated user |
+    | `isLoading` | `boolean` | `true` while fetching `/api/auth/me` |
+    | `isAdmin` | `boolean` | `true` when `user.role === 'admin'` or `'root'` |
+    | `isRoot` | `boolean` | `true` when `user.role === 'root'` |
+    | `isAuthenticated` | `boolean` | `true` when `user` is non-null |
+    | `refreshUser()` | `() => Promise<void>` | Re-fetches user data from `/api/auth/me` |
+  </Accordion>
+
+  <Accordion title="useVehicle() — vehicle list and selection">
+    ```tsx
+    import { useVehicle } from "@/contexts/VehicleContext";
+
+    const {
+      vehicles,
+      selectedVehicle,
+      setSelectedVehicle,
+      isLoading,
+      refreshVehicles,
+    } = useVehicle();
+    ```
+
+    | Value | Type | Description |
+    |-------|------|-------------|
+    | `vehicles` | `Vehicle[]` | Active vehicles only (filtered by `isActive: true`) |
+    | `selectedVehicle` | `Vehicle \| null` | Currently selected vehicle |
+    | `setSelectedVehicle` | `(v: Vehicle) => void` | Updates selected vehicle |
+    | `isLoading` | `boolean` | `true` while fetching `/api/vehicles` |
+    | `refreshVehicles()` | `() => void` | Re-fetches the vehicle list |
+  </Accordion>
+
+  <Accordion title="useSidebar() — sidebar collapse state">
+    ```tsx
+    import { useSidebar } from "@/contexts/SidebarContext";
+
+    const { isCollapsed, toggleSidebar, collapseSidebar, expandSidebar } = useSidebar();
+    ```
+
+    State is persisted to `localStorage` (key: `sidebar-collapsed`) and synchronized across browser tabs via the `storage` event.
+  </Accordion>
+
+  <Accordion title="useTheme() — light/dark theme">
+    ```tsx
+    import { useTheme } from "@/contexts/ThemeContext";
+
+    const { theme, toggleTheme } = useTheme();
+    ```
+
+    | Value | Type | Description |
+    |-------|------|-------------|
+    | `theme` | `"light" \| "dark"` | Current active theme |
+    | `toggleTheme()` | `() => void` | Switches between light and dark mode, persists to `localStorage` (`km-theme`) |
+
+    On first mount, `ThemeContext` reads `km-theme` from `localStorage`. If unset, it falls back to the OS `prefers-color-scheme` preference.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="TypeScript types" icon="code" href="/dev/types">
+    The full interface reference for all types consumed by these components.
+  </Card>
+  <Card title="Architecture" icon="building" href="/dev/architecture">
+    Context providers, BFF proxy pattern, and the dashboard layout structure.
+  </Card>
+</CardGroup>

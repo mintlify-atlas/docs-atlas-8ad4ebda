@@ -1,0 +1,85 @@
+---
+title: "Routes & mileage"
+description: "Log trips, track distances, and monitor total mileage per vehicle."
+---
+
+Every trip you log is stored as a route record tied to a specific vehicle. KilomeTracker accumulates those distances automatically so your total mileage is always up to date.
+
+## Logging a route
+
+<Steps>
+  <Step title="Open the Add Route form">
+    From the sidebar, click **Add Route**. You can also reach it from the dashboard by selecting a vehicle and clicking **Add Route**.
+  </Step>
+  <Step title="Select a vehicle">
+    Choose the vehicle alias from the dropdown. Only active vehicles appear in the list.
+  </Step>
+  <Step title="Enter the distance">
+    Type the distance covered in the **Distance (km)** field (`distanciaRecorrida`). Use the actual kilometers driven for this trip — not the odometer reading.
+  </Step>
+  <Step title="Set the date">
+    Pick the trip date (`fecha`) using the date picker. It defaults to today.
+  </Step>
+  <Step title="Add notes (optional)">
+    Use the **Additional notes** field (`notasAdicionales`) to record anything relevant — route description, purpose, passengers, or road conditions.
+  </Step>
+  <Step title="Save the route">
+    Click **Save Route**. The record is created immediately and your vehicle's `kilometrajeTotal` is updated.
+  </Step>
+</Steps>
+
+## Routes history
+
+The **Routes History** page lists every route across all your vehicles. You can filter the list to find specific records quickly.
+
+### Filtering routes
+
+| Filter | Field | Description |
+|---|---|---|
+| Vehicle | `vehicleAlias` | Show routes for one specific vehicle only. |
+| Start date | `startDate` | Include routes logged on or after this date. |
+| End date | `endDate` | Include routes logged on or before this date. |
+
+On mobile, tap **Filters** to open the filter panel from the bottom of the screen. On desktop, the filter panel appears as a card above the results table.
+
+### Mobile vs. desktop views
+
+- **Mobile**: each route appears as a card showing the vehicle alias, distance, date, and any notes.
+- **Desktop**: routes are displayed in a full-width table with sortable columns.
+
+## Mileage accumulation
+
+Every saved route automatically adds `distanciaRecorrida` to the vehicle's `kilometrajeTotal`. You do not need to update the odometer manually. The running total is visible on the vehicle card in the dashboard and on the **Vehicle Statistics** page.
+
+<Tip>
+  Log routes as soon as possible after each trip so your mileage total stays accurate and your fuel efficiency calculations reflect real driving patterns.
+</Tip>
+
+## Editing a route
+
+To correct a distance or date, open **Routes History**, find the route, and click the edit icon. All fields can be updated after creation.
+
+## Deleting a route
+
+<Warning>
+  Route deletion is permanent. There is no soft delete or undo — once a route is deleted, the record is gone and the mileage is not automatically subtracted from your vehicle's `kilometrajeTotal`.
+</Warning>
+
+To delete a route, open **Routes History** and click the delete icon on the route card (mobile) or table row (desktop). Confirm the action in the dialog.
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Vehicle statistics" icon="chart-line" href="/vehicles/vehicle-stats">
+    See total distance, cost per km, and efficiency metrics for each vehicle.
+  </Card>
+  <Card title="Fuel tracking" icon="droplet" href="/tracking/fuel">
+    Pair route data with refuel records to calculate real fuel efficiency.
+  </Card>
+  <Card title="Managing vehicles" icon="car" href="/vehicles/managing-vehicles">
+    Add, edit, or deactivate the vehicles you log routes for.
+  </Card>
+  <Card title="Expenses" icon="receipt" href="/expenses/expenses">
+    Track all other vehicle costs alongside your mileage data.
+  </Card>
+</CardGroup>

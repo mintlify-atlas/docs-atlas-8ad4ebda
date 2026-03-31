@@ -1,0 +1,121 @@
+---
+title: "Authentication"
+description: "How authentication works in KilomeTracker — JWT tokens, middleware route protection, and role-based access."
+---
+
+## Login flow
+
+<Steps>
+  <Step title="User submits credentials">
+    The login form POSTs to `/api/auth/login` with `email` and `password`. This is a Next.js proxy route — credentials are validated against the external backend.
+  </Step>
+  <Step title="Backend returns a JWT">
+    On success, the backend issues a signed JWT token. The Next.js proxy intercepts the response and stores the token in an HTTP-only cookie named `token`.
+
+    ```javascript
+    cookieResponse.cookies.set('token', token, {
+      httpOnly: true,       // not accessible from JavaScript
+      secure: true,         // HTTPS only in production
+      sameSite: 'strict',   // CSRF protection
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    });
+    ```
+  </Step>
+  <Step title="Middleware enforces route protection">
+    Every subsequent navigation is evaluated by `middleware.js`. If the `token` cookie is present, the request continues. If it is missing on a protected route, the user is redirected to `/` (login page).
+  </Step>
+  <Step title="Client loads user data">
+    After login, `UserContext` calls `GET /api/auth/me` to populate the user object. This happens once on mount inside the dashboard layout. All components read the user via `useUser()`.
+  </Step>
+</Steps>
+
+<Note>
+  The JWT is stored in an HTTP-only cookie, which means browser JavaScript — including any injected scripts — cannot read it. This is the primary defense against cross-site scripting (XSS) token theft.
+</Note>
+
+---
+
+## Logout flow
+
+<Steps>
+  <Step title="User triggers logout">
+    The app sends `POST /api/auth/logout`. No request body is needed.
+  </Step>
+  <Step title="Cookie is cleared">
+    The proxy route deletes the `token` cookie from the response. The browser drops the cookie immediately.
+  </Step>
+  <Step title="User is redirected to login">
+    After the cookie is cleared, the user is redirected to `/`. The middleware will block access to all protected routes until they log in again.
+  </Step>
+</Steps>
+
+---
+
+## Route protection
+
+Route protection is handled entirely in `middleware.js` at the edge — no extra server calls are made.
+
+| Condition | Behavior |
+|---|---|
+| Unauthenticated user visits a protected route | Redirected to `/` |
+| Authenticated user visits `/` | Redirected to `/dashboard` |
+| Any request to `/api/*` | Bypasses middleware (cookie is handled in each route handler) |
+
+**Protected routes** — any path not in the public list below requires the `token` cookie:
+
+**Public routes** — accessible without authentication:
+
+| Route | Description |
+|---|---|
+| `/` | Login page |
+| `/register` | Registration page |
+| `/forgot-password` | Password reset request |
+| `/reset-password/[token]` | Password reset confirmation |
+
+---
+
+## Role-based access
+
+KilomeTracker uses four roles. Three are assignable through the UI; one is reserved.
+
+| Role | Permissions |
+|---|---|
+| `read` | View all records; no create, edit, or delete |
+| `write` | Create, edit, and delete all records |
+| `admin` | Full access plus user management (`/admin-users`) |
+| `root` | Superuser — exists in the database only |
+
+<Warning>
+  The `root` role cannot be assigned or removed through the UI. It must be managed directly in the database. Attempting to set a user's role to `root` via the admin panel is not possible.
+</Warning>
+
+**Admin pages** verify the user's role on the client side immediately after mount. If `isAdmin` is `false`, the page redirects to `/dashboard` before any admin content is rendered.
+
+---
+
+## UserContext and `useUser()`
+
+`UserContext` (`src/contexts/UserContext.tsx`) is the single source of truth for authentication state across the dashboard. It is mounted as the outermost provider in the dashboard layout.
+
+```typescript
+import { useUser } from "@/contexts/UserContext";
+
+const { user, isLoading, isAdmin, isRoot, isAuthenticated, refreshUser } = useUser();
+```
+
+| Value | Type | Description |
+|---|---|---|
+| `user` | `User \| null` | The authenticated user object, or `null` if not authenticated |
+| `isLoading` | `boolean` | `true` while the initial `/api/auth/me` request is in flight |
+| `isAdmin` | `boolean` | `true` when the user's role is `admin` or `root` |
+| `isRoot` | `boolean` | `true` when the user's role is `root` |
+| `isAuthenticated` | `boolean` | `true` when `user` is non-null |
+| `error` | `string \| null` | Error message if the `/api/auth/me` request fails, otherwise `null` |
+| `refreshUser()` | `() => Promise<void>` | Re-fetches the current user from `/api/auth/me` |
+
+`isAdmin` returns `true` for both `admin` and `root` roles, so admin UI checks do not need to handle `root` separately.
+
+<Tip>
+  Call `refreshUser()` after the user updates their profile or password to keep the context in sync without a full page reload.
+</Tip>

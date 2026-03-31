@@ -1,0 +1,64 @@
+---
+title: "Profile & account settings"
+description: "Update your username, email, and password."
+---
+
+Your profile page at `/profile` lets you update your personal information, change your password, and review your account role.
+
+## Updating your profile
+
+<Steps>
+  <Step title="Open your profile">
+    Click your username or avatar in the app header, then select **Profile** — or navigate directly to `/profile`.
+  </Step>
+  <Step title="Edit your details">
+    Update your **Username** and/or **Email** in the profile form.
+  </Step>
+  <Step title="Save changes">
+    Click **Save changes**. The app confirms success with a toast notification and refreshes your session data.
+  </Step>
+</Steps>
+
+## Changing your password
+
+You must know your current password to set a new one.
+
+<Steps>
+  <Step title="Scroll to the password section">
+    On the profile page, find the **Change password** form below your profile details.
+  </Step>
+  <Step title="Enter your current password">
+    Type your existing password in the **Current password** field (`currentPassword`).
+  </Step>
+  <Step title="Enter a new password">
+    Type your desired password in the **New password** field (`newPassword`).
+  </Step>
+  <Step title="Confirm your new password">
+    Re-enter the same password in the **Confirm new password** field (`confirmPassword`). Both fields must match.
+  </Step>
+  <Step title="Submit">
+    Click **Update password**. If successful, you will see a confirmation message. Your existing session remains active.
+  </Step>
+</Steps>
+
+## Dark mode toggle
+
+A theme toggle is available in the app header. Click it at any time to switch between light and dark mode. Your preference is applied instantly across the entire application.
+
+## Your role
+
+Every KilomeTracker account is assigned a role that controls what you can see and do. Your current role is displayed on your profile page.
+
+| Role | Capabilities |
+|------|-------------|
+| `read` | View vehicles, routes, refuels, maintenance, and expenses. Cannot create, edit, or delete any records. |
+| `write` | Full access to add and manage vehicles, routes, refuels, maintenance, and expenses. |
+| `admin` | Everything in `write`, plus access to the user management panel to manage other accounts. |
+
+<Note>
+  You cannot change your own role. Contact an administrator if you need a different level of access.
+</Note>
+
+## Account security
+
+KilomeTracker stores your JWT authentication token in an HTTP-only cookie. This means the token is never accessible to browser JavaScript, protecting your session from cross-site scripting (XSS) attacks. You do not need to manage tokens manually.

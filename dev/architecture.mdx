@@ -1,0 +1,216 @@
+---
+title: "Architecture overview"
+description: "How KilomeTracker is structured — App Router, BFF proxy, React contexts, and mobile-first design patterns."
+---
+
+## Tech stack
+
+| Layer | Technology | Version |
+|---|---|---|
+| Framework | Next.js, App Router | ^16.1.7 |
+| Language | TypeScript, strict mode | ^5 |
+| Styling | Tailwind CSS | v4 |
+| Components | shadcn/ui + Radix UI | — |
+| Forms | React Hook Form + Zod | ^7.66 / ^4.1.13 |
+| Charts | Recharts | ^2.15.3 |
+| Icons | lucide-react | ^0.555.0 |
+| Tests (unit) | Vitest + @vitest/coverage-v8 | ^3 |
+| Tests (e2e) | Playwright | ^1.49.0 |
+| Deploy | Vercel | — |
+
+---
+
+## Project structure
+
+```
+src/
+├── app/
+│   ├── page.tsx                          # Login (root route)
+│   ├── layout.tsx                        # Root layout (Geist fonts)
+│   ├── register/page.tsx
+│   ├── forgot-password/page.tsx
+│   ├── reset-password/[token]/page.tsx
+│   └── (dashboard)/
+│       ├── layout.tsx                    # Dashboard layout — mounts all providers
+│       ├── dashboard/page.tsx
+│       ├── add-vehicle/page.tsx
+│       ├── edit-vehicle/[alias]/page.tsx
+│       ├── vehicle-stats/[alias]/page.tsx
+│       ├── fuel-analysis/page.tsx
+│       ├── fuel-analysis/[alias]/page.tsx
+│       ├── add-route/page.tsx
+│       ├── add-refuel/page.tsx
+│       ├── routes-history/page.tsx
+│       ├── refuels-history/page.tsx
+│       ├── add-maintenance/page.tsx
+│       ├── edit-maintenance/[id]/page.tsx
+│       ├── maintenance-history/page.tsx
+│       ├── upcoming-maintenance/page.tsx
+│       ├── add-expense/page.tsx
+│       ├── edit-expense/[id]/page.tsx
+│       ├── expenses-history/page.tsx
+│       ├── expenses-summary/page.tsx
+│       ├── upcoming-expenses/page.tsx
+│       ├── profile/page.tsx
+│       └── admin-users/page.tsx          # Admin only
+│   └── api/                              # BFF proxy routes (all .js)
+│       ├── auth/{login,logout,register,me,updateprofile,updatepassword}/
+│       ├── auth/users/[id]/{route.js,role/}
+│       ├── vehicles/[alias]/{stats,fuel-efficiency,reactivate}/
+│       ├── routes/
+│       ├── refuels/vehicle/[alias]/analysis/
+│       ├── maintenance/{[id],upcoming}/
+│       └── expenses/{[id],summary,upcoming}/
+├── components/
+│   ├── layout/PageHeader.tsx
+│   ├── navigation/{NavGroup,NavItem,VehicleSwitcher}.tsx
+│   ├── charts/                           # Recharts wrappers
+│   ├── features/
+│   │   ├── stats/StatCard.tsx            # StatCard with accent support
+│   │   └── vehicles/                     # Vehicle-specific components
+│   └── ui/                               # shadcn/ui + custom components
+├── contexts/
+│   ├── UserContext.tsx
+│   ├── VehicleContext.tsx
+│   ├── SidebarContext.tsx
+│   └── ThemeContext.tsx
+├── hooks/
+│   ├── useUpcomingCounts.ts
+│   └── useChartColors.ts
+└── Types.ts                              # Shared TypeScript interfaces
+middleware.js                             # Auth routing
+```
+
+### Top-level directories
+
+| Directory | Purpose |
+|---|---|
+| `src/app/` | Next.js App Router pages and BFF proxy API routes |
+| `src/components/` | Reusable UI components — layout, navigation, charts, and shadcn/ui primitives |
+| `src/contexts/` | React Context providers for global state (user, vehicles, sidebar) |
+| `src/hooks/` | Custom hooks for shared logic (badge counts, chart colors) |
+| `src/Types.ts` | All shared TypeScript interfaces and entity types |
+| `middleware.js` | Edge middleware for JWT-based route protection |
+
+---
+
+## App Router pages
+
+All dashboard pages live under the `(dashboard)` route group and are wrapped in a shared layout that mounts the global providers.
+
+| Route | Description |
+|---|---|
+| `/` | Login page |
+| `/dashboard` | Vehicle grid overview |
+| `/add-vehicle` | Add a new vehicle |
+| `/edit-vehicle/[alias]` | Edit an existing vehicle |
+| `/vehicle-stats/[alias]` | Statistics for a specific vehicle |
+| `/fuel-analysis/[alias]` | Fuel consumption analysis per vehicle |
+| `/routes-history` | All logged routes |
+| `/refuels-history` | All fuel refuel records |
+| `/maintenance-history` | Maintenance records with filters |
+| `/upcoming-maintenance` | Maintenance due soon or overdue |
+| `/expenses-history` | All expense records with filters |
+| `/expenses-summary` | Expense breakdown by category |
+| `/upcoming-expenses` | Recurring expenses due in the next 30 days |
+| `/profile` | User profile and password settings |
+| `/admin-users` | User management (admin role required) |
+
+---
+
+## React contexts
+
+All three providers are mounted in `src/app/(dashboard)/layout.tsx` and available to every dashboard page.
+
+<CardGroup cols={2}>
+  <Card title="UserContext" icon="user" href="/dev/authentication">
+    Manages authentication state. Access via `useUser()`. Provides `user`, `isLoading`, `isAdmin`, `isRoot`, `isAuthenticated`, and `refreshUser()`.
+  </Card>
+  <Card title="VehicleContext" icon="car" href="/dev/architecture">
+    Manages active vehicle list and the currently selected vehicle. Access via `useVehicle()`. Provides `vehicles`, `selectedVehicle`, `setSelectedVehicle`, `isLoading`, and `refreshVehicles()`.
+  </Card>
+  <Card title="SidebarContext" icon="panel-left" href="/dev/architecture">
+    Manages sidebar collapse state. Persists to `localStorage` and syncs across browser tabs. Access via `useSidebar()`. Provides `isCollapsed`, `toggleSidebar`, `collapseSidebar`, and `expandSidebar`.
+  </Card>
+  <Card title="ThemeContext" icon="sun" href="/dev/architecture">
+    Manages light/dark theme. Persists to `localStorage` under key `km-theme` and respects `prefers-color-scheme` on first visit. Access via `useTheme()`. Provides `theme` and `toggleTheme()`.
+  </Card>
+</CardGroup>
+
+---
+
+## Key hooks
+
+### `useUpcomingCounts`
+
+Fetches badge counts for the navigation sidebar. Calls `/api/maintenance/upcoming` and `/api/expenses/upcoming` in parallel on mount, then refreshes every 5 minutes.
+
+```typescript
+const { maintenanceCount, expensesCount, maintenanceByVehicle, isLoading, error } = useUpcomingCounts();
+```
+
+Returns `0` for any count on a fetch failure — `error` contains the error message string, or `null` on success. The hook never throws.
+
+### `useChartColors`
+
+Returns a set of color tokens that adapt to the current light/dark mode. Use this in every Recharts component.
+
+```typescript
+const c = useChartColors();
+// c.chart1 (indigo), c.chart2 (green), c.chart3 (orange), c.chart4 (purple), c.chart5 (red)
+// c.grid, c.tick, c.tooltipBg, c.tooltipBorder
+```
+
+### `useMediaQuery`
+
+Returns a boolean indicating whether a CSS media query matches. Used internally by responsive components.
+
+### `useApiData`
+
+Generic hook for data fetching from `/api/*` routes with loading and error state.
+
+---
+
+## Mobile-first patterns
+
+KilomeTracker is used primarily on mobile devices. All UI decisions follow these conventions.
+
+### FilterPanel
+
+Use `FilterPanel` (`src/components/ui/FilterPanel.tsx`) on any page with filters. It renders differently per viewport:
+
+- **Mobile**: a "Filters" button with an active-count badge, opening a Sheet from the bottom.
+- **Desktop**: a Card with a header, filter fields in a grid, and an Apply button.
+
+Never render inline filters on mobile.
+
+### Card lists vs tables
+
+History pages render two layouts based on the viewport:
+
+```tsx
+{/* Mobile — block md:hidden */}
+<div className="block md:hidden space-y-3">
+  {items.map((item) => (
+    <div className="rounded-xl border border-border bg-card p-4">
+      {/* header: name + badges + action buttons (h-8 w-8) */}
+      {/* body: main value + secondary metadata */}
+    </div>
+  ))}
+</div>
+
+{/* Desktop — hidden md:block */}
+<div className="hidden md:block">
+  <Card><Table>...</Table></Card>
+</div>
+```
+
+### Skeleton loading states
+
+Always use `CardSkeleton` while data is loading to prevent layout shifts.
+
+```tsx
+import { CardSkeleton } from "@/components/ui/card-skeleton";
+
+{loading ? <CardSkeleton rows={6} /> : <MyContent />}
+```

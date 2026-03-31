@@ -1,0 +1,98 @@
+---
+title: "Local development setup"
+description: "Clone, install, configure, and run KilomeTracker locally."
+---
+
+<Note>
+  The frontend requires a running instance of the **kilometracker-backend** API. Configure its URL via the `API_BASE_URL` environment variable before starting the dev server. See [Environment variables](/dev/environment) for details.
+</Note>
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- **Node.js** >= 18 — [nodejs.org](https://nodejs.org)
+- **npm** (bundled with Node.js) or **pnpm**
+- A running **KilomeTracker backend** — local or hosted (e.g., Railway, Render)
+
+---
+
+## Setup steps
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/javierhrzgt/kilometracker-front.git && cd kilometracker-front
+    ```
+  </Step>
+
+  <Step title="Install dependencies">
+    <CodeGroup>
+
+    ```bash npm
+    npm install
+    ```
+
+    ```bash pnpm
+    pnpm install
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Create the environment file">
+    Create a `.env.local` file in the project root with the backend URL:
+
+    ```env
+    # .env.local
+
+    # Backend API base URL (no trailing slash)
+    API_BASE_URL=https://your-backend-url.com
+    ```
+
+    See [Environment variables](/dev/environment) for a full reference of all variables and how to configure them for production.
+  </Step>
+
+  <Step title="Start the development server">
+    ```bash
+    npm run dev
+    ```
+
+    The app will be available at **http://localhost:3000**.
+
+    Authenticated users are automatically redirected to `/dashboard`. Unauthenticated requests to protected routes are redirected to `/` (login).
+  </Step>
+</Steps>
+
+---
+
+## Available scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the Next.js development server on http://localhost:3000 |
+| `npm run build` | Compile a production build |
+| `npm start` | Start the production server (requires a prior `build`) |
+| `npm run lint` | Run ESLint across the codebase |
+| `npm test` | Run Vitest unit tests (single run) |
+| `npm run test:watch` | Run Vitest in watch mode |
+| `npm run test:coverage` | Run Vitest with a V8 coverage report |
+| `npm run test:e2e` | Run Playwright end-to-end tests |
+
+---
+
+## TypeScript path aliases
+
+The project uses a `@/*` path alias that maps to `./src/*`. Always use this alias for imports — never use relative paths.
+
+```ts
+// Correct
+import { FilterPanel } from "@/components/ui/FilterPanel";
+import { useUser } from "@/contexts/UserContext";
+import type { Vehicle } from "@/Types";
+
+// Avoid
+import { FilterPanel } from "../../components/ui/FilterPanel";
+```
+
+This alias is configured in `tsconfig.json` and works across all files in `src/`.

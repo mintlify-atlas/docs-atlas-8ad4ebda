@@ -1,0 +1,108 @@
+---
+title: "User management (Admin)"
+description: "Manage users, roles, and account status as an administrator."
+---
+
+The admin users page at `/admin-users` gives administrators full visibility and control over every registered account in KilomeTracker.
+
+<Warning>
+  This page is only accessible to users with the `admin` or `root` role. If you navigate to `/admin-users` without the required role, you are automatically redirected to the dashboard.
+</Warning>
+
+## Viewing all users
+
+The user list shows every registered account with the following details:
+
+- **Username** — the account's display name
+- **Email** — the account's email address
+- **Role** — one of `read`, `write`, `admin`, or `root`
+- **Status** — whether the account is active or deactivated
+
+### Role badges
+
+Roles are displayed with color-coded badges to make them easy to identify at a glance:
+
+| Role | Badge color |
+|------|-------------|
+| `root` | Red (destructive) |
+| `admin` | Purple |
+| `write` | Blue (info) |
+| `read` | Gray (muted) |
+
+## Filtering users
+
+Use the filter controls at the top of the user list to show only active or inactive accounts. Toggle the **isActive** filter to switch between views.
+
+## Role overview
+
+<CardGroup cols={2}>
+  <Card title="read" icon="eye">
+    Can view vehicles, routes, refuels, maintenance, and expenses. Cannot create, edit, or delete records.
+  </Card>
+  <Card title="write" icon="pen-to-square">
+    Can add and manage vehicles, routes, refuels, maintenance, and expenses. No access to user management.
+  </Card>
+  <Card title="admin" icon="shield-halved">
+    Full access including the user management panel. Can change roles, deactivate, and reactivate other users.
+  </Card>
+  <Card title="root" icon="lock">
+    Exists in the database for system-level purposes. Cannot be assigned from the UI. Displayed with a red badge.
+  </Card>
+</CardGroup>
+
+<Note>
+  The `root` role cannot be assigned to any user from the admin panel. It exists only at the database level and is not available in the role selector.
+</Note>
+
+## Changing a user's role
+
+<Steps>
+  <Step title="Find the user">
+    Locate the user in the list. Use the filter or scroll to find the account you want to update.
+  </Step>
+  <Step title="Open the role selector">
+    Click the role badge or the edit action for that user row to open the role selector.
+  </Step>
+  <Step title="Select a new role">
+    Choose one of the available roles: `read`, `write`, or `admin`.
+  </Step>
+  <Step title="Confirm the change">
+    Confirm the selection. The role badge updates immediately in the user list.
+  </Step>
+</Steps>
+
+## Deactivating a user
+
+Deactivating a user performs a soft delete — the account is not permanently removed. Instead, `isActive` is set to `false` and the user can no longer log in.
+
+<Warning>
+  You cannot deactivate your own account. The deactivate action is disabled for the currently logged-in admin.
+</Warning>
+
+<Steps>
+  <Step title="Find the user">
+    Locate the active user you want to deactivate in the user list.
+  </Step>
+  <Step title="Click Deactivate">
+    Click the **Deactivate** action for that user. A confirmation prompt appears.
+  </Step>
+  <Step title="Confirm">
+    Confirm the action. The user's status badge changes to inactive and they are immediately unable to log in.
+  </Step>
+</Steps>
+
+## Reactivating a user
+
+Deactivated users remain in the database and can be restored at any time.
+
+<Steps>
+  <Step title="Filter by inactive">
+    Toggle the filter to show inactive users so the deactivated account is visible in the list.
+  </Step>
+  <Step title="Click Reactivate">
+    Click the **Reactivate** action next to the user you want to restore.
+  </Step>
+  <Step title="Confirm">
+    Confirm the action. The user's status changes back to active and they can log in again immediately.
+  </Step>
+</Steps>

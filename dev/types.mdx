@@ -1,0 +1,491 @@
+---
+title: "TypeScript types reference"
+description: "Complete reference for all shared TypeScript interfaces in src/Types.ts."
+keywords: ["typescript", "types", "interfaces", "vehicle", "route", "refuel", "maintenance", "expense"]
+---
+
+All shared types live in a single file — `src/Types.ts` — and are imported across every page and component using the `@/Types` path alias.
+
+```typescript
+import type { Vehicle, Route, Expense } from "@/Types";
+```
+
+<Note>
+  Numeric fields in **form data types** (e.g. `AddVehicleFormData`, `AddMaintenanceFormData`) are typed as `string` because HTML inputs always yield strings. Each form handler converts these to `number` before submitting to the API. **Entity types** (`Vehicle`, `Route`, etc.) always use `number` for numeric fields as returned by the backend.
+</Note>
+
+---
+
+## Core entities
+
+These interfaces represent documents returned by the backend API. They always include `_id`, `createdAt`, and `updatedAt` fields from MongoDB.
+
+### Vehicle
+
+```typescript
+export interface Vehicle {
+  _id: string;
+  alias: string;
+  marca: string;
+  modelo: number;
+  plates: string;
+  kilometrajeInicial: number;
+  kilometrajeTotal: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+Vehicles are identified by `alias` (unique string) throughout the app — in URLs, API calls, and relations. Never use `_id` for routing.
+
+### Route
+
+```typescript
+export interface Route {
+  _id: string;
+  vehicleAlias: string;
+  distanciaRecorrida: number;
+  fecha: string;
+  notasAdicionales?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+### Refuel
+
+```typescript
+export interface Refuel {
+  _id: string;
+  vehicleAlias: string;
+  tipoCombustible: string;
+  cantidadGastada: number;
+  galones?: number;
+  precioPorGalon?: number;
+  fecha: string;
+  notasAdicionales?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+Valid values for `tipoCombustible`: `Regular`, `Premium`, `Diesel`, `Eléctrico`, `Híbrido`, `V-Power`.
+
+### Maintenance
+
+```typescript
+export interface Maintenance {
+  _id: string;
+  vehicleAlias: string;
+  vehicle?: {
+    _id: string;
+    alias: string;
+    marca: string;
+    modelo: number;
+  };
+  tipo: string;
+  descripcion: string;
+  costo: number;
+  fecha: string;
+  kilometraje: number;
+  proveedor?: string;
+  proximoServicioFecha?: string;
+  proximoServicioKm?: number;
+  notas?: string;
+  owner?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+Valid values for `tipo`: `Cambio de aceite`, `Rotación de llantas`, `Frenos`, `Inspección`, `Reparación`, `Batería`, `Filtros`, `Transmisión`, `Suspensión`, `Alineación`, `Otro`.
+
+### Expense
+
+```typescript
+export interface Expense {
+  _id: string;
+  vehicleAlias: string;
+  categoria: string;
+  monto: number;
+  descripcion: string;
+  fecha: string;
+  esRecurrente: boolean;
+  frecuenciaRecurrencia?: string; // 'Mensual' | 'Trimestral' | 'Semestral' | 'Anual'
+  proximoPago?: string;
+  esDeducibleImpuestos: boolean;
+  notas?: string;
+  owner?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+Valid values for `categoria`: `Seguro`, `Impuestos`, `Registro`, `Estacionamiento`, `Peajes`, `Lavado`, `Multas`, `Financiamiento`, `Otro`.
+
+Valid values for `frecuenciaRecurrencia`: `Mensual`, `Trimestral`, `Semestral`, `Anual`.
+
+### User and UserRole
+
+```typescript
+export type UserRole = 'read' | 'write' | 'admin' | 'root';
+
+export interface User {
+  _id: string;
+  username: string;
+  email: string;
+  role: UserRole;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+<Note>
+  The `root` role exists in the database but is not assignable or manageable from the UI. The admin panel only surfaces `read`, `write`, and `admin`.
+</Note>
+
+---
+
+## Form data types
+
+These types back React Hook Form instances. Numeric fields are `string` here; the submit handler converts them before calling the API.
+
+### Vehicle forms
+
+```typescript
+export interface AddVehicleFormData {
+  alias: string;
+  marca: string;
+  modelo: number;
+  plates: string;
+  kilometrajeInicial: string; // converted to number on submit
+  isActive: boolean;
+}
+
+export interface EditVehicleFormData {
+  marca: string;
+  modelo: number;
+  plates: string;
+  kilometrajeInicial: string; // converted to number on submit
+  isActive: boolean;
+}
+```
+
+### Route and refuel forms
+
+```typescript
+export interface AddRouteFormData {
+  vehicleAlias: string;
+  distanciaRecorrida: string; // converted to number on submit
+  fecha: string;
+  notasAdicionales: string;
+}
+
+export interface AddRefuelFormData {
+  vehicleAlias: string;
+  tipoCombustible: string;
+  cantidadGastada: string; // converted to number on submit
+  galones: string;         // converted to number on submit
+  fecha: string;
+  notasAdicionales: string;
+}
+```
+
+### Maintenance form
+
+```typescript
+export interface AddMaintenanceFormData {
+  vehicleAlias: string;
+  tipo: string;
+  descripcion: string;
+  costo: string;               // converted to number on submit
+  fecha: string;
+  kilometraje: string;         // converted to number on submit
+  proveedor: string;
+  proximoServicioFecha: string;
+  proximoServicioKm: string;   // converted to number on submit
+  notas: string;
+}
+```
+
+### Expense form
+
+```typescript
+export interface AddExpenseFormData {
+  vehicleAlias: string;
+  categoria: string;
+  monto: string;               // converted to number on submit
+  descripcion: string;
+  fecha: string;
+  esRecurrente: boolean;
+  frecuenciaRecurrencia: string;
+  proximoPago: string;
+  esDeducibleImpuestos: boolean;
+}
+```
+
+### Auth and profile forms
+
+```typescript
+export interface ProfileFormData {
+  username: string;
+  email: string;
+}
+
+export interface PasswordChangeFormData {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface RegisterFormData {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: string;
+}
+```
+
+---
+
+## Filter types
+
+Each history page uses a corresponding filter type to populate query parameters sent to the API.
+
+```typescript
+export interface RouteFilters {
+  vehicleAlias: string;
+  startDate: string;
+  endDate: string;
+}
+
+export interface RefuelFilters {
+  vehicleAlias: string;
+  tipoCombustible: string;
+  startDate: string;
+  endDate: string;
+}
+
+export interface MaintenanceFilters {
+  vehicleAlias: string;
+  tipo: string;
+  startDate: string;
+  endDate: string;
+}
+
+export interface ExpenseFilters {
+  vehicleAlias: string;
+  categoria: string;
+  startDate: string;
+  endDate: string;
+  esDeducibleImpuestos: string;
+}
+```
+
+All date fields are `YYYY-MM-DD` strings. `esDeducibleImpuestos` is a `string` (`"true"` / `"false"` / `""`) because it originates from a `<select>` element.
+
+---
+
+## Analytics types
+
+These types are returned by analytics and stats endpoints, not the standard CRUD routes.
+
+### VehicleStats
+
+Returned by `GET /api/vehicles/:alias/stats`.
+
+```typescript
+export interface VehicleStats {
+  vehicle: Vehicle;
+  statistics: {
+    totalRoutes: number;
+    totalRefuels: number;
+    totalMaintenances: number;
+    totalExpenses: number;
+    totalDistancia: number;
+  };
+  costs: {
+    combustible: number;
+    mantenimiento: number;
+    gastosOtros: number;
+    total: number;
+    costoPorKm: number;
+  };
+  efficiency: {
+    kmPorLitro: number;
+    kmPorGalon: number;
+    promedioDistanciaPorRuta: number;
+  };
+}
+```
+
+### EnhancedVehicleStats
+
+Used in the vehicle stats page for the enhanced cost-of-ownership view.
+
+```typescript
+export interface EnhancedVehicleStats {
+  counts: {
+    totalRoutes: number;
+    totalRefuels: number;
+    totalMaintenance: number;
+    totalExpenses: number;
+  };
+  costs: {
+    fuelCost: number;
+    maintenanceCost: number;
+    otherExpenses: number;
+    totalCost: number;
+  };
+  efficiency: {
+    kmPerLiter: number;
+    kmPerGallon: number;
+    averageDistancePerRoute: number;
+    costPerKm: number;
+  };
+  totalCostOfOwnership: number;
+  totalDistance: number;
+}
+```
+
+### FuelAnalysis
+
+Returned by `GET /api/refuels/vehicle/:alias/analysis`.
+
+```typescript
+export interface FuelAnalysis {
+  vehicle: Vehicle;
+  summary: {
+    totalReabastecimientos: number;
+    totalGastado: number;
+    totalGalones: number;
+    promedioGalonPrice: number;
+  };
+  porTipoCombustible: {
+    [key: string]: {
+      cantidad: number;
+      gasto: number;
+      galones: number;
+    };
+  };
+}
+```
+
+### FuelEfficiency
+
+Returned by `GET /api/vehicles/:alias/fuel-efficiency`. Supports optional `?startDate` / `?endDate` query params.
+
+```typescript
+export interface FuelEfficiency {
+  vehicle: {
+    alias: string;
+    marca: string;
+    modelo: number;
+  };
+  efficiency: {
+    kmPorLitro: number;
+    kmPorGalon: number;
+    costoPorKm: number;
+    totalDistancia: number;
+    totalGalones: number;
+    totalGastoCombustible: number;
+  };
+  period: {
+    startDate: string;
+    endDate: string;
+    totalRefuels: number;
+    totalRoutes: number;
+  };
+}
+```
+
+### ExpenseSummary
+
+Returned by `GET /api/expenses/summary`. Each item represents a category group aggregated by the backend.
+
+```typescript
+export interface ExpenseSummary {
+  _id: string;       // categoria name from backend grouping
+  totalMonto: number;
+  cantidad: number;
+}
+```
+
+### UpcomingExpense
+
+Returned by `GET /api/expenses/upcoming` (recurring expenses due in the next 30 days).
+
+```typescript
+export interface UpcomingExpense {
+  _id: string;
+  vehicleAlias: string;
+  vehicle?: {
+    _id: string;
+    alias: string;
+    marca: string;
+    modelo: number;
+  };
+  categoria: string;
+  monto: number;
+  descripcion: string;
+  proximoPago: string;
+  frecuenciaRecurrencia: string;
+  esRecurrente: boolean;
+}
+```
+
+### UpcomingMaintenance
+
+Returned by `GET /api/maintenance/upcoming` (maintenance due by date or odometer).
+
+```typescript
+export interface UpcomingMaintenance {
+  _id: string;
+  vehicleAlias: string;
+  vehicle?: {
+    _id: string;
+    alias: string;
+    marca: string;
+    modelo: number;
+    kilometrajeTotal: number;
+  };
+  tipo: string;
+  proximoServicioFecha?: string;
+  proximoServicioKm?: number;
+}
+```
+
+### PaginationMeta
+
+Included in paginated list responses.
+
+```typescript
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  nextPage: number | null;
+  prevPage: number | null;
+}
+```
+
+---
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Architecture" icon="building" href="/dev/architecture">
+    How types fit into the BFF proxy pattern and context-based state.
+  </Card>
+  <Card title="UI components" icon="layout-grid" href="/dev/components">
+    How entity and filter types are consumed by StatCard, FilterPanel, and other UI components.
+  </Card>
+</CardGroup>

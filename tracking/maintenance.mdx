@@ -1,0 +1,129 @@
+---
+title: "Maintenance tracking"
+description: "Record services, schedule upcoming maintenance, and get reminders before your vehicle is due."
+---
+
+Every service you perform on a vehicle can be logged with cost, odometer reading, and provider details. When you schedule a next service date or mileage, KilomeTracker surfaces that record in the **Upcoming Maintenance** view before it comes due.
+
+## Logging maintenance
+
+<Steps>
+  <Step title="Open the Add Maintenance form">
+    Click **Add Maintenance** in the sidebar navigation.
+  </Step>
+  <Step title="Select a vehicle">
+    Choose the vehicle alias from the dropdown. Only active vehicles appear in the list.
+  </Step>
+  <Step title="Choose the maintenance type">
+    Select the service type (`tipo`) from the dropdown. See [maintenance types](#maintenance-types) below for the full list.
+  </Step>
+  <Step title="Enter a description">
+    Describe the work performed in the **Description** field (`descripcion`). Be specific — for example, "Replaced front brake pads and rotors" rather than just "Brakes".
+  </Step>
+  <Step title="Enter the cost">
+    Type the total cost of the service in the **Cost** field (`costo`), including parts and labor.
+  </Step>
+  <Step title="Set the service date">
+    Pick the date the service was performed (`fecha`). It defaults to today.
+  </Step>
+  <Step title="Enter the odometer reading">
+    Type the vehicle's current mileage in the **Odometer (km)** field (`kilometraje`). This is the odometer reading at the time of service, not the distance driven since the last service.
+  </Step>
+  <Step title="Enter the service provider (optional)">
+    Record the shop or mechanic name in the **Provider** field (`proveedor`). Useful for tracking which providers you've used and comparing costs over time.
+  </Step>
+  <Step title="Schedule the next service (optional)">
+    Fill in **Next service date** (`proximoServicioFecha`) and/or **Next service km** (`proximoServicioKm`) to create a future reminder. You can set one, both, or neither.
+  </Step>
+  <Step title="Add notes (optional)">
+    Use the **Notes** field (`notas`) for any additional details — parts numbers, warranty information, or technician recommendations.
+  </Step>
+  <Step title="Save the record">
+    Click **Save Maintenance**. The record is created and, if you set a next service date or mileage, it will appear in **Upcoming Maintenance** when it comes due.
+  </Step>
+</Steps>
+
+<Note>
+  Scheduling the next service date or mileage is optional, but highly recommended. Without it, KilomeTracker cannot remind you when a repeat service is due. At minimum, set `proximoServicioFecha` for time-based services like annual inspections, and `proximoServicioKm` for mileage-based services like oil changes.
+</Note>
+
+## Maintenance types
+
+KilomeTracker supports the following 11 service types:
+
+| Type | Description |
+|---|---|
+| Cambio de aceite | Oil change — the most common recurring service. |
+| Rotación de llantas | Tire rotation to even out tread wear. |
+| Frenos | Brake inspection, pad replacement, or rotor service. |
+| Inspección | General vehicle inspection — safety, emissions, or pre-purchase checks. |
+| Reparación | Unscheduled repairs for mechanical or electrical faults. |
+| Batería | Battery testing, charging, or replacement. |
+| Filtros | Air filter, cabin filter, fuel filter, or oil filter replacement. |
+| Transmisión | Transmission fluid change, adjustment, or repair. |
+| Suspensión | Shock absorbers, struts, springs, or suspension linkage service. |
+| Alineación | Wheel alignment adjustment. |
+| Otro | Any service that does not fit the categories above. |
+
+## Upcoming maintenance
+
+The **Upcoming Maintenance** page at `/upcoming-maintenance` shows all records where `proximoServicioFecha` or `proximoServicioKm` is approaching or overdue.
+
+### How reminders work
+
+- **Date-based**: a record appears when `proximoServicioFecha` is within the upcoming threshold.
+- **Mileage-based**: a record appears when the vehicle's current `kilometrajeTotal` is close to or past `proximoServicioKm`.
+
+When upcoming items exist, a badge count appears next to **Upcoming services** in the navigation sidebar, so you can see at a glance how many services are pending across all vehicles.
+
+### What the upcoming view shows
+
+Each upcoming record displays:
+
+- Vehicle alias, brand, and model
+- Maintenance type (`tipo`)
+- Next service date (`proximoServicioFecha`), if set
+- Next service mileage (`proximoServicioKm`), if set
+- The vehicle's current total mileage (`kilometrajeTotal`) — so you can see how far away the mileage threshold is
+
+<Tip>
+  When you complete a service that was showing as upcoming, log it as a new maintenance record and set the next service date or mileage again. The completed service moves to history and the new upcoming record takes its place.
+</Tip>
+
+## Maintenance history
+
+The **Maintenance History** page lists all service records. Use filters to narrow the list:
+
+| Filter | Field | Description |
+|---|---|---|
+| Vehicle | `vehicleAlias` | Show records for one vehicle only. |
+| Type | `tipo` | Filter by service type, e.g., show only oil changes. |
+| Start date | `startDate` | Include records on or after this date. |
+| End date | `endDate` | Include records on or before this date. |
+
+On mobile, tap **Filters** to open the filter panel as a bottom sheet. On desktop, the filters appear as a card above the results.
+
+## Deleting a maintenance record
+
+<Warning>
+  Maintenance deletion is permanent. Deleted records cannot be recovered — there is no soft delete or undo.
+</Warning>
+
+To delete a record, open **Maintenance History**, find the entry, and click the delete icon. Confirm the action in the dialog.
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Vehicle statistics" icon="chart-line" href="/vehicles/vehicle-stats">
+    See maintenance costs as part of total cost of ownership per vehicle.
+  </Card>
+  <Card title="Routes & mileage" icon="route" href="/tracking/routes">
+    Mileage data drives the upcoming maintenance mileage threshold.
+  </Card>
+  <Card title="Expenses" icon="receipt" href="/expenses/expenses">
+    Log insurance, registration, and other non-service costs separately.
+  </Card>
+  <Card title="Recurring expenses" icon="arrows-rotate" href="/expenses/recurring-expenses">
+    Track time-based recurring costs like insurance renewals alongside service reminders.
+  </Card>
+</CardGroup>

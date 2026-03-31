@@ -1,0 +1,154 @@
+---
+title: "Vehicle statistics"
+description: "Understand the full cost of ownership and performance metrics for each vehicle."
+---
+
+The vehicle statistics page (`/vehicle-stats/[alias]`) gives you a complete financial and operational picture of a single vehicle. It aggregates data from routes, refuels, maintenance records, and expenses into one dashboard.
+
+## Metrics overview
+
+<CardGroup cols={2}>
+  <Card title="Activity counts" icon="list-check">
+    Total number of routes, refuels, maintenance records, and expense entries logged for the vehicle.
+  </Card>
+  <Card title="Cost breakdown" icon="circle-dollar-sign">
+    Fuel costs, maintenance costs, other expenses, total cost, and cost per kilometer.
+  </Card>
+  <Card title="Efficiency metrics" icon="gauge-high">
+    Kilometers per liter, kilometers per gallon, and average distance per route.
+  </Card>
+  <Card title="Total cost of ownership" icon="receipt">
+    The cumulative amount spent on the vehicle since its first recorded entry.
+  </Card>
+</CardGroup>
+
+## Activity counts
+
+The statistics page shows four activity counters pulled from `VehicleStats.statistics`:
+
+| Metric | Field | Description |
+|---|---|---|
+| Total routes | `totalRoutes` | Number of trip records logged |
+| Total refuels | `totalRefuels` | Number of fuel refill records |
+| Total maintenance | `totalMaintenances` | Number of maintenance service records |
+| Total expenses | `totalExpenses` | Number of expense entries |
+| Total distance | `totalDistancia` | Sum of all route distances in kilometers |
+
+## Cost breakdown
+
+Costs are categorized into three buckets, each with a distinct color to help you scan the dashboard quickly.
+
+| Category | Field | Color |
+|---|---|---|
+| Fuel costs | `combustible` | Blue (`info`) |
+| Maintenance costs | `mantenimiento` | Amber (`warning`) |
+| Other expenses | `gastosOtros` | Purple |
+| Total cost | `total` | Amber (`warning`) |
+
+The **cost per kilometer** (`costoPorKm`) divides the total cost by the total distance traveled, giving you a single number that represents the true running cost of the vehicle.
+
+<Tip>
+  Check **cost per km** regularly. It is the most useful single metric for understanding how much your vehicle actually costs to operate — it accounts for fuel, maintenance, and all other expenses together.
+</Tip>
+
+## Efficiency metrics
+
+Fuel efficiency metrics are calculated from refuel records and route data:
+
+| Metric | Field | Description |
+|---|---|---|
+| km per liter | `kmPorLitro` | Distance traveled per liter of fuel consumed |
+| km per gallon | `kmPorGalon` | Distance traveled per gallon of fuel consumed |
+| Average distance per route | `promedioDistanciaPorRuta` | Mean trip length across all logged routes |
+
+These values come from the `VehicleStats.efficiency` object returned by `GET /api/vehicles/[alias]/stats`.
+
+## Total cost of ownership
+
+The **total cost of ownership** (`totalCostOfOwnership` on `EnhancedVehicleStats`) sums every recorded cost — fuel, maintenance, and other expenses — from the vehicle's first entry to the present. Use this figure to compare vehicles in your fleet or evaluate whether it is more economical to replace a vehicle.
+
+The **total distance traveled** (`totalDistance`) is the cumulative kilometers logged across all routes.
+
+## StatCard color coding
+
+The statistics dashboard uses color-coded stat cards to help you identify cost categories at a glance:
+
+| Color | Accent | Used for |
+|---|---|---|
+| Blue | `info` | Fuel costs (`combustible`) |
+| Amber | `warning` | Maintenance costs, total cost |
+| Purple | `purple` | Other expenses (`gastosOtros`) |
+| Green | `success` | Active status indicators |
+
+This color system matches the domain tokens defined in `globals.css` (`--color-cat-fuel`, `--color-cat-maintenance`, `--color-cat-expenses`) and is consistent across all pages in KilomeTracker.
+
+## TypeScript interfaces
+
+The stats page is powered by two interfaces from `src/Types.ts`:
+
+```typescript
+export interface VehicleStats {
+  vehicle: Vehicle;
+  statistics: {
+    totalRoutes: number;
+    totalRefuels: number;
+    totalMaintenances: number;
+    totalExpenses: number;
+    totalDistancia: number;
+  };
+  costs: {
+    combustible: number;
+    mantenimiento: number;
+    gastosOtros: number;
+    total: number;
+    costoPorKm: number;
+  };
+  efficiency: {
+    kmPorLitro: number;
+    kmPorGalon: number;
+    promedioDistanciaPorRuta: number;
+  };
+}
+
+export interface EnhancedVehicleStats {
+  counts: {
+    totalRoutes: number;
+    totalRefuels: number;
+    totalMaintenance: number;
+    totalExpenses: number;
+  };
+  costs: {
+    fuelCost: number;
+    maintenanceCost: number;
+    otherExpenses: number;
+    totalCost: number;
+  };
+  efficiency: {
+    kmPerLiter: number;
+    kmPerGallon: number;
+    averageDistancePerRoute: number;
+    costPerKm: number;
+  };
+  totalCostOfOwnership: number;
+  totalDistance: number;
+}
+```
+
+Data is fetched from `GET /api/vehicles/[alias]/stats`.
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Managing vehicles" icon="car" href="/vehicles/managing-vehicles">
+    Add, edit, and deactivate vehicles in your fleet.
+  </Card>
+  <Card title="Tracking fuel" icon="gas-pump" href="/tracking/fuel">
+    Log refuels to keep efficiency metrics accurate.
+  </Card>
+  <Card title="Tracking maintenance" icon="wrench" href="/tracking/maintenance">
+    Record service events that contribute to maintenance costs.
+  </Card>
+  <Card title="Expenses" icon="receipt" href="/expenses/expenses">
+    Track insurance, taxes, and other costs included in total cost of ownership.
+  </Card>
+</CardGroup>

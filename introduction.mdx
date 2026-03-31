@@ -1,0 +1,73 @@
+---
+title: "Introduction"
+description: "KilomeTracker is a mobile-first vehicle management app for tracking mileage, fuel, maintenance, and expenses."
+---
+
+KilomeTracker is a web application for comprehensive vehicle management. It is designed for individual drivers and small fleets who need a single place to track every kilometer driven, every fuel stop, every service visit, and every cost associated with their vehicles.
+
+The app is available at [kilometracker.vercel.app](https://kilometracker.vercel.app) and is built mobile-first — the primary experience is optimized for phones, with swipeable data cards, bottom-sheet filters, and bottom navigation. On desktop it scales to full tables and a collapsible sidebar.
+
+## Key capabilities
+
+<CardGroup cols={2}>
+  <Card title="Vehicles" icon="car" href="/vehicles/managing-vehicles">
+    Register multiple vehicles by alias, brand, model year, license plates, and initial mileage. View full stats and lifetime history per vehicle.
+  </Card>
+  <Card title="Routes" icon="route" href="/tracking/routes">
+    Log every trip with distance (km) and date. Total mileage updates automatically and feeds into cost-per-km calculations.
+  </Card>
+  <Card title="Fuel" icon="gas-pump" href="/tracking/fuel">
+    Record refuels with fuel type, amount spent, and gallons. KilomeTracker calculates km/liter, km/gallon, and cost per km automatically.
+  </Card>
+  <Card title="Maintenance" icon="wrench" href="/tracking/maintenance">
+    Keep a complete service log — oil changes, tire rotations, brake jobs, inspections, and more. Set next-service reminders by date or mileage.
+  </Card>
+  <Card title="Expenses" icon="receipt" href="/expenses/expenses">
+    Track insurance, taxes, registration, parking, tolls, fines, financing, and any other vehicle costs. Mark items as tax-deductible.
+  </Card>
+  <Card title="Admin" icon="users" href="/account/admin-users">
+    Admin users can manage accounts, assign roles, deactivate users, and reactivate them as needed.
+  </Card>
+</CardGroup>
+
+## How it works
+
+KilomeTracker is built around a simple workflow. Start with a vehicle and build up its history over time:
+
+<Steps>
+  <Step title="Add a vehicle">
+    Register your vehicle with a unique alias, brand (`marca`), model year (`modelo`), license plates (`plates`), and initial mileage (`kilometrajeInicial`). The alias becomes the identifier used throughout every URL and record.
+  </Step>
+  <Step title="Log trips">
+    Every time you drive, record a route with the distance in kilometers and the date. Your vehicle's total mileage (`kilometrajeTotal`) grows with each entry.
+  </Step>
+  <Step title="Track fuel">
+    After each refuel, log the fuel type, amount spent, and gallons filled. KilomeTracker aggregates this data into efficiency metrics and charts.
+  </Step>
+  <Step title="Monitor maintenance">
+    Add maintenance records after every service visit. Schedule the next service by date or mileage and receive upcoming-maintenance reminders in the dashboard.
+  </Step>
+  <Step title="Manage expenses">
+    Record one-time and recurring costs (insurance, taxes, tolls, etc.). The expenses summary shows a category breakdown with a donut chart and highlights deductible items.
+  </Step>
+</Steps>
+
+## Role-based access
+
+KilomeTracker uses role-based access control with three user-facing roles:
+
+| Role | Permissions |
+|------|-------------|
+| `read` | View all vehicle data, history, and reports. Cannot create or edit records. |
+| `write` | Full access to create, edit, and delete vehicles, routes, refuels, maintenance, and expenses. |
+| `admin` | All `write` permissions plus access to the user management panel — create accounts, change roles, deactivate and reactivate users. |
+
+Roles are assigned by an admin user from the **Admin — Users** panel. The `root` role exists in the backend but is not manageable from the UI.
+
+## Security and authentication
+
+KilomeTracker uses JWT tokens for authentication. Tokens are stored in HTTP-only cookies and are never exposed to client-side JavaScript.
+
+<Note>
+  The frontend uses a **BFF (Backend for Frontend) proxy pattern**. Every API call from the browser goes to a Next.js route handler under `/api/`, which reads the JWT from the HTTP-only cookie and forwards the request to the backend with an `Authorization: Bearer` header. This keeps auth tokens completely out of reach of browser JavaScript, protecting against XSS token theft.
+</Note>

@@ -1,0 +1,94 @@
+---
+title: "Environment variables"
+description: "Configure KilomeTracker's environment variables for development and production."
+---
+
+KilomeTracker uses a single required environment variable to connect the Next.js frontend to the backend API.
+
+---
+
+## Required variables
+
+| Variable | Description |
+|---|---|
+| `API_BASE_URL` | Base URL of the KilomeTracker backend API. No trailing slash. |
+
+### `API_BASE_URL`
+
+The base URL of the backend REST API that the Next.js proxy routes forward requests to.
+
+**Example values:**
+
+- Development: `http://localhost:4000`
+- Production: `https://your-backend.railway.app`
+
+<Warning>
+  Do not include a trailing slash. A URL like `https://your-backend.railway.app/` will cause all proxied requests to produce double-slash paths (e.g., `//api/vehicles`), which the backend will reject.
+</Warning>
+
+---
+
+## Setting up .env.local
+
+Create a `.env.local` file in the project root. This file is loaded automatically by Next.js in development and is never included in builds.
+
+```env
+# .env.local
+
+# Backend API base URL (no trailing slash)
+API_BASE_URL=https://your-backend-url.com
+```
+
+<Warning>
+  Never commit `.env.local` to version control. It may contain sensitive credentials or internal service URLs.
+</Warning>
+
+<Note>
+  `.env.local` is already listed in `.gitignore`. You do not need to add it manually.
+</Note>
+
+---
+
+## Production deployment (Vercel)
+
+When deploying to Vercel, set environment variables through the Vercel dashboard — do not rely on `.env.local` files in your repository.
+
+1. Open your project in the [Vercel dashboard](https://vercel.com).
+2. Go to **Settings** → **Environment Variables**.
+3. Add `API_BASE_URL` with your production backend URL (no trailing slash).
+4. Choose which environments the variable applies to: **Production**, **Preview**, and/or **Development**.
+5. Redeploy the project for the change to take effect.
+
+---
+
+## Security
+
+`API_BASE_URL` is accessed **only server-side** by the Next.js API routes in `src/app/api/`. It is never embedded in client-side JavaScript bundles and is never exposed to the browser.
+
+All frontend API calls go to `/api/*` routes on the same origin. Those routes read `API_BASE_URL` at request time on the server, forward the request to the backend with the user's JWT (stored in an HTTP-only cookie), and return the response to the client. The backend URL and the JWT never leave the server.
+
+---
+
+## Common errors
+
+### All API calls return 500
+
+The most likely cause is a missing or misconfigured `API_BASE_URL`.
+
+**Check:** Confirm `.env.local` exists in the project root and contains a valid `API_BASE_URL` value. Restart the dev server after creating or editing the file — Next.js does not hot-reload environment files.
+
+### Requests fail with double-slash paths
+
+**Symptom:** Backend returns 404 for paths like `//api/vehicles`.
+
+**Cause:** `API_BASE_URL` has a trailing slash (e.g., `https://your-backend.railway.app/`).
+
+**Fix:** Remove the trailing slash:
+
+```env
+# Wrong
+API_BASE_URL=https://your-backend.railway.app/
+
+# Correct
+API_BASE_URL=https://your-backend.railway.app
+```
